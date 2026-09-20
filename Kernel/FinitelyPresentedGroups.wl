@@ -12,9 +12,10 @@ BeginPackage["Taggar`FinitelyPresentedGroups`"];
 
 
 FinitelyPresentedGroup;
+FPGHomomorphism;
+FPGSubgroup;
 FPGWord;
 FPGWordReduce;
-FPGSubgroup;
 
 
 Begin["`Private`"];
@@ -127,6 +128,22 @@ FPGWord[FinitelyPresentedGroup[gens_List, rels_List], ints_List] /;
 	\[Not] And @@ (IntegerQ[#] && # =!= 0 && Abs[#] <= Length[gens] &
 		/@ ints) :=
 			(Message[FPGWord::BadWord]; $Failed)
+
+
+ClearAll[FPGWordQ, FPGWordLength, FPGWordGenerators];
+FPGWordQ[FPGWord[G_FinitelyPresentedGroup, word_List]] := True
+FPGWordQ[_] := False
+FPGWordLength[FPGWord[_, word_List]] := Length[word]
+FPGWordGenerators[FPGWord[G_FinitelyPresentedGroup, word_List]] :=
+	DeleteDuplicates[Abs /@ word]
+
+
+ClearAll[SubstituteWord];
+SubstituteWord[word_List, images_List] :=
+	Flatten[Replace[word, {
+		i_Integer /; i > 0 :> images[[i, 2]],
+		i_Integer /; i < 0 :> Reverse[-images[[-i, 2]]]
+	}, {1}]]
 
 
 (* ::Text:: *)
@@ -267,6 +284,62 @@ FPGSubgroup /: FPGSubgroup[G_FinitelyPresentedGroup, gens_List]["GeneratorList"]
 	gens
 FPGSubgroup /: FPGSubgroup[G_FinitelyPresentedGroup, gens_List]["GeneratorCount"] :=
 	Length[gens]
+
+
+(* ::Subsection:: *)
+(*Homomorphisms*)
+
+
+ClearAll[FPGHomomorphism];
+FPGHomomorphism::usage =
+	"FPGHomomorphism[G, H, images] represents a homomorphism from G to H determined by images.";
+FPGHomomorphism::BadImages =
+	"The images must be valid FPGWord expressions in the target group.";
+FPGHomomorphism::NotHomomorphism =
+	"The proposed generator images do not satisfy the relators of the source group.";
+FPGHomomorphism::WrongDomain =
+	"The word must belong to the domain of the homomorphism.";
+
+
+FPGHomomorphism[
+	G : FinitelyPresentedGroup[gens_List, rels_List],
+	H : FinitelyPresentedGroup[_, _],
+	images_List
+] /; Length[images] =!= Length[gens] :=
+	(Message[FPGHomomorphism::BadImages]; $Failed)
+FPGHomomorphism[
+	G : FinitelyPresentedGroup[gens_List, rels_List],
+	H : FinitelyPresentedGroup[_, _],
+	images_List
+] /; \[Not] And @@ (MatchQ[#, FPGWord[H, _List]] & /@ images) :=
+	(Message[FPGHomomorphism::BadImages]; $Failed)
+FPGHomomorphism[
+	G : FinitelyPresentedGroup[gens_List, rels_List],
+	H_FinitelyPresentedGroup,
+	images_List
+] /; \[Not] And @@ (
+	FPGWordReduce[
+		FPGWord[H, SubstituteWord[
+			ParseWord[#, AssociationThread[gens, Range[Length[gens]]]],
+			images]]
+	] === FPGWord[H, {}] & /@ rels) :=
+	(Message[FPGHomomorphism::NotHomomorphism]; $Failed)
+
+
+FPGHomomorphism /:
+	h : FPGHomomorphism[G_FinitelyPresentedGroup, H_FinitelyPresentedGroup, images_List][
+		FPGWord[K_FinitelyPresentedGroup, word_List]
+	] /; K =!= G :=
+	(Message[FPGHomomorphism::WrongDomain]; $Failed)
+
+
+FPGHomomorphism /:
+	h_FPGHomomorphism[word_FPGWord] :=
+		Module[
+			{G, H, images},
+			
+			{G, H, images} = List @@ h;
+			FPGWordReduce[FPGWord[H, SubstituteWord[word[[2]], images]]]]
 
 
 (* ::Section::Closed:: *)

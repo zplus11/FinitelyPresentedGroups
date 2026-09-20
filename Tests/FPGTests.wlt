@@ -2,6 +2,7 @@ PacletDirectoryLoad[DirectoryName[DirectoryName[$TestFileName]]];
 Needs["Taggar`FinitelyPresentedGroups`"];
 
 g = FinitelyPresentedGroup[{a, b}, {a^2, b^2, (a ** b)^2}];
+g1 = FinitelyPresentedGroup[{a, b}, {a^2, b^2}];
 g2 = FinitelyPresentedGroup[{x, y}, {x^2, y^2}];
 
 TestCreate[FinitelyPresentedGroup[{a, b}, {a^2, b^2, (a ** b)^2}], g, TestID -> "FinitelyPresentedGroup-Valid"]
@@ -46,3 +47,7 @@ TestCreate[FPGSubgroup[g, {}]["GeneratorCount"], 0, TestID -> "FPGSubgroup-Trivi
 
 TestCreate[FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}], FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}], TestID -> "FPGSubgroup-Valid"]
 TestCreate[FPGSubgroup[g, {FPGWord[g2, {1}]}], $Failed, ExpectedMessages -> {FPGSubgroup::BadGenerators}, TestID -> "FPGSubgroup-WrongParentGroup"]
+
+TestCreate[phi[FPGWord[g1, {1, 2, -1}]], FPGWord[g2, {1, 2, -1}], TestID -> "FPGHomomorphism-Apply"]
+TestCreate[phi[FPGWord[g1, {1}]], FPGWord[g2, {1}], TestID -> "FPGHomomorphism-Generator"]
+TestCreate[phi[FPGWord[g1, {1, 2}] ** FPGWord[g1, {-2}]], FPGWordReduce[FPGWord[g2, {1, 2}], FPGWord[g2, {-2}]], TestID -> "FPGHomomorphism-Product"]
