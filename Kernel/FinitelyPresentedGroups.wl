@@ -129,6 +129,22 @@ FPGWord[FinitelyPresentedGroup[gens_List, rels_List], ints_List] /;
 
 
 (* ::Text:: *)
+(*Formatting*)
+
+
+FPGWord /:
+	MakeBoxes[FPGWord[FinitelyPresentedGroup[gens_List, rels_List], word_List], StandardForm] :=
+		If[word === {}, ToBoxes[1],
+			RowBox@Riffle[
+				Replace[Split[word], x : {i_Integer ..} :>
+					If[Length[x] == 1,
+						ToBoxes[If[i > 0, gens[[i]], Superscript[gens[[-i]], -1]]],
+						SuperscriptBox[ToBoxes[If[i > 0, gens[[i]], Superscript[gens[[-i]], -1]]], ToBoxes[Length[x]]]
+					], {1}],
+				"\[ThinSpace]"]]
+
+
+(* ::Text:: *)
 (*Word reduction*)
 
 
