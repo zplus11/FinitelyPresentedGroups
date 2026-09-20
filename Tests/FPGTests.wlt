@@ -2,6 +2,7 @@ PacletDirectoryLoad[DirectoryName[DirectoryName[$TestFileName]]];
 Needs["Taggar`FinitelyPresentedGroups`"];
 
 g = FinitelyPresentedGroup[{a, b}, {a^2, b^2, (a ** b)^2}];
+g2 = FinitelyPresentedGroup[{x, y}, {x^2, y^2}];
 
 TestCreate[FinitelyPresentedGroup[{a, b}, {a^2, b^2, (a ** b)^2}], g, TestID -> "FinitelyPresentedGroup-Valid"]
 TestCreate[FinitelyPresentedGroup[{a, a}, {a^2}], $Failed, {FinitelyPresentedGroup::DuplicateGenerators}, TestID -> "FinitelyPresentedGroup-DuplicateGenerators"]
@@ -37,3 +38,11 @@ TestCreate[FPGWord[g, {1, 2}]^-1, FPGWord[g, {-2, -1}], TestID -> "FPGWord-Power
 TestCreate[FPGWord[g, {1, 2}] ** FPGWord[g, {-2, 1}], FPGWord[g, {}], TestID -> "FPGWord-ProductReducesToIdentity"]
 TestCreate[FPGWord[g, {1}]^2, FPGWord[g, {}], TestID -> "FPGWord-GeneratorSquare"]
 TestCreate[FPGWord[g, {2}]^2, FPGWord[g, {}], TestID -> "FPGWord-GeneratorSquareSecond"]
+
+TestCreate[FPGSubgroup[g, {FPGWord[g, {1}]}]["ParentGroup"], g, TestID -> "FPGSubgroup-ParentGroup"]
+TestCreate[FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}]["Generators"], {FPGWord[g, {1}], FPGWord[g, {2}]}, TestID -> "FPGSubgroup-Generators"]
+TestCreate[FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}]["GeneratorCount"], 2, TestID -> "FPGSubgroup-GeneratorCount"]
+TestCreate[FPGSubgroup[g, {}]["GeneratorCount"], 0, TestID -> "FPGSubgroup-Trivial"]
+
+TestCreate[FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}], FPGSubgroup[g, {FPGWord[g, {1}], FPGWord[g, {2}]}], TestID -> "FPGSubgroup-Valid"]
+TestCreate[FPGSubgroup[g, {FPGWord[g2, {1}]}], $Failed, ExpectedMessages -> {FPGSubgroup::BadGenerators}, TestID -> "FPGSubgroup-WrongParentGroup"]
