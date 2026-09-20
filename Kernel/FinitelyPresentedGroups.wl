@@ -217,6 +217,9 @@ FPGWordReduce[G_FinitelyPresentedGroup, word_List] :=
 (*Algebra of words*)
 
 
+FPGWordReduce[$Failed] := $Failed
+
+
 FPGWord /:
 	Inverse[FPGWord[
 		G : FinitelyPresentedGroup[gens_List, rels_List],
