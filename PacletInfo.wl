@@ -3,7 +3,7 @@ PacletObject[
     "Name" -> "Taggar/FinitelyPresentedGroups",
     "Description" -> "Support for finitely presented groups in Wolfram Mathematica",
     "Creator" -> "Naman T.",
-    "Version" -> "0.0.1",
+    "Version" -> "0.0.2",
     "WolframVersion" -> "12+",
     "PublisherID" -> "Taggar",
     "License" -> "MIT",
