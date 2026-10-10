@@ -12,7 +12,6 @@ BeginPackage["Taggar`FinitelyPresentedGroups`"];
 
 
 CosetTable;
-CosetTableIndex
 FinitelyPresentedGroup;
 FreeGroup;
 FPGWord;
@@ -235,6 +234,8 @@ FPGWord::usage =
 	"FPGWord[G, indices] represents a group word in G determined by indices.";
 FPGWord::BadWord =
 	"The word contains an invalid generator index.";
+FPGWord::DifferentGroups =
+	"The words belong to different groups.";
 
 
 FPGWord[FinitelyPresentedGroup[gens_List, rels_List], ints : { _Integer .. }] /;
@@ -256,10 +257,6 @@ FPGWord[G : FinitelyPresentedGroup[gens_List, rels_List], word : Except[{_Intege
 		If[w === $Failed,
 			Message[FPGWord::BadWord]; $Failed,
 			FPGWord[G, w]]]
-
-
-FPGWord /: Equal[FPGWord[G_, w1_List], FPGWord[G_, w2_List]] /;
-    ReduceByRelators[G, Join[w1, Reverse[-w2]]] === {} := True
 
 
 (* ::Text:: *)
@@ -327,19 +324,23 @@ NormaliseRelators[FinitelyPresentedGroup[gens_List, rels_List]] :=
 
 $RelatorRulesCache = <||>;
 ComputeRelatorRules[G_FinitelyPresentedGroup] :=
-	DeleteDuplicates @ Join @@ (
-		Function[r, Join[CyclicConjugates[r], CyclicConjugates[InvertWord[r]]]] /@
-			DeleteCases[NormaliseRelators[G], {}])
+	DeleteDuplicates[
+		Join @@ (
+			Function[r, Join[CyclicConjugates[r], CyclicConjugates[InvertWord[r]]]] /@
+				DeleteCases[NormaliseRelators[G], {}])]
 
 
 RelatorRules[G_FinitelyPresentedGroup] :=
 	Module[
-		{cached = Lookup[$RelatorRulesCache, G, None]},
+		{cached = Lookup[$RelatorRulesCache, G, None], rules},
 		
 		If[cached =!= None,
 			cached,
-			If[Length[$RelatorRulesCache] > 200, $RelatorRulesCache = <||>];
-			$RelatorRulesCache[G] = ComputeRelatorRules[G]]]
+			rules = ComputeRelatorRules[G];
+			If[MatchQ[rules, {{___Integer} ...}],
+				If[Length[$RelatorRulesCache] > 200, $RelatorRulesCache = <||>];
+				$RelatorRulesCache[G] = rules];
+			rules]]
 
 
 ReduceByRelators[G_FinitelyPresentedGroup, word_List] :=
