@@ -55,7 +55,6 @@ ToColumns[word_List, nc_Integer] :=
 
 
 ClearAll[MakeEnumerator, CosetEnumerate];
-
 MakeEnumerator[target_String] :=
 	Compile[
 		{{flat, _Integer, 1}, {starts, _Integer, 1}, {nsubs, _Integer},
@@ -245,6 +244,29 @@ CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] :=
 			renum[[live]] = Range @ Length[live];
 			table = res[[live, ;; nc]];
 			ArrayReshape[renum[[Flatten @ table]], Dimensions[table]]]]
+
+
+(* ::Subsection:: *)
+(*Word problem*)
+
+
+(* ::Text:: *)
+(*The coset table of the trivial subgroup is the regular action of a finite group, so a word is trivial exactly when tracing it from coset 1 returns to coset 1. The table is cached per group; failures (infinite or too large groups) are cached too, so they are not retried:*)
+
+
+$WordProblemCache = <||>;
+WordProblemTable[G_FinitelyPresentedGroup] :=
+	If[KeyExistsQ[$WordProblemCache, G],
+		$WordProblemCache[G],
+		If[Length[$WordProblemCache] > 50, $WordProblemCache = <||>];
+		$WordProblemCache[G] = Quiet @ CosetTable[G, {}, "MaxCosets" -> 20000]]
+
+(* True or False if the group could be enumerated, $Failed otherwise *)
+WordProblem[G_FinitelyPresentedGroup, word_List] :=
+	With[{t = WordProblemTable[G]},
+		If[MatrixQ[t, IntegerQ],
+			Fold[t[[#1, #2]] &, 1, ToColumns[word, 2 G["GeneratorCount"]]] === 1,
+			$Failed]]
 
 
 (* ::Section:: *)
