@@ -105,7 +105,7 @@ ParseWord[_, _Association] := $Failed
 FreeReduce[word_List] :=
 	Module[
 		{stack, top = 0, x},
-
+		
 		stack = ConstantArray[0, Length[word]];
 		Do[
 			If[top > 0 && stack[[top]] + x == 0,
@@ -118,7 +118,7 @@ FreeReduce[word_List] :=
 ValidRelatorsQ[gens_List, rels_List] :=
 	Module[
 		{map},
-
+		
 		map = AssociationThread[gens, Range[Length[gens]]];
 		And @@ (ValidRelatorQ[#, map] & /@ rels)]
 ValidRelatorQ[rel_, map_Association] :=
@@ -207,9 +207,9 @@ FinitelyPresentedGroup[group : Alternatives[
 					{g, Keys[words]}, {i, k}],
 				1],
 			{}];
-
+			
 		syms = Array[Symbol["Global`x" <> ToString[#]] &, k];
-
+			
 		toWord = Function[w,
 			If[w === {},
 				1,
@@ -250,10 +250,10 @@ FPGWord[w_FPGWord] := w
 FPGWord[G : FinitelyPresentedGroup[gens_List, rels_List], word : Except[{_Integer ...}]] :=
 	Module[
 		{map, w},
-
+		
 		map = AssociationThread[gens, Range @ Length[gens]];
 		w = ParseWord[word, map];
-
+		
 		If[w === $Failed,
 			Message[FPGWord::BadWord]; $Failed,
 			FPGWord[G, w]]]
@@ -268,7 +268,7 @@ MakeBoxes[FPGWord[G_, {}], form_] :=
 MakeBoxes[FPGWord[G_, w_List], form_] :=
 	Module[
 		{gens = G["GeneratorList"], n, k, u, s},
-
+		
 		n = Length[w];
 		k = First @ Select[Range[n], Divisible[n, #] &&
 		w === Flatten @ ConstantArray[w[[;; #]], n/#] &, 1];
@@ -317,7 +317,7 @@ NormaliseRelator[rel_, map_Association] :=
 NormaliseRelators[FinitelyPresentedGroup[gens_List, rels_List]] :=
 	Module[
 		{map},
-
+		
 		map = AssociationThread[gens, Range[Length[gens]]];
 		NormaliseRelator[#, map] & /@ rels]
 
@@ -333,7 +333,7 @@ ComputeRelatorRules[G_FinitelyPresentedGroup] :=
 RelatorRules[G_FinitelyPresentedGroup] :=
 	Module[
 		{cached = Lookup[$RelatorRulesCache, G, None], rules},
-
+		
 		If[cached =!= None,
 			cached,
 			rules = ComputeRelatorRules[G];
@@ -346,7 +346,7 @@ RelatorRules[G_FinitelyPresentedGroup] :=
 ReduceByRelators[G_FinitelyPresentedGroup, word_List] :=
 	Module[
 		{rules = RelatorRules[G], w = FreeReduce[word], changed = True, pos, r},
-
+		
 		While[changed,
 			changed = False;
 			For[r = 1, r <= Length[rules], r++,
