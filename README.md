@@ -4,10 +4,10 @@ FinitelyPresentedGroups is a Wolfram language paclet (package) for working with 
 
 ## Installation
 
-Clone this repository and load it as a paclet directory:
+Run in any mathematica notebook (local or cloud):
 
 ```mathematica
-PacletDirectoryLoad["path"]
+PacletInstall["Taggar/FinitelyPresentedGroups"]
 ```
 
 ## Usage
@@ -75,6 +75,8 @@ Please feel free to give your feedback on the package, or to contribute with an 
 
 ## Version log
  
-**Version 0.0.2,** *on 10 October, 2026* &mdash; coset enumeration.
+**Version 1.0.0,** *on 11 October, 2026* &mdash; first release.
+
+**v0.0.2,** *on 10 October, 2026* &mdash; coset enumeration.
 
 **v0.0.1,** *on 15 August, 2026* &mdash; initial upload with `FinitelyPresentedGroup` and `FPGWord`s.
