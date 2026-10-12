@@ -48,7 +48,9 @@ FinitelyPresentedGroup::BadGenerators =
 FinitelyPresentedGroup::BadRelators =
 	"The relators must be valid words in the generators.";
 FinitelyPresentedGroup::SymbolDefined =
-    "The generator symbol `1` already has definitions or attributes. Clearing them.";
+	"The generator symbol `1` already has definitions or attributes. Clearing them.";
+FinitelyPresentedGroup::NotEnumerable =
+	"The group could not be enumerated within `1` cosets; it may be infinite.";
 
 
 (* ::Text:: *)
@@ -217,12 +219,69 @@ FinitelyPresentedGroup[group : Alternatives[
 		FinitelyPresentedGroup[syms, toWord /@ rels]]
 
 
+(* ::Subsection:: *)
+(*Group properties*)
+
+
 (* ::Text:: *)
 (*Order of a finitely presented group is now merely the index of its coset enumeration by {}:*)
 
 
 FinitelyPresentedGroup /: GroupOrder[G_FinitelyPresentedGroup] :=
 	With[{t = CosetTable[G, {}]}, If[ListQ[t], Length[t], t]]
+
+
+FinitelyPresentedGroup /: GroupGenerators[G_FinitelyPresentedGroup] :=
+	FPGWord[G, #] & /@ G["GeneratorList"]
+
+
+FinitelyPresentedGroup /: GroupElements[G_FinitelyPresentedGroup] :=
+	With[{d = RegularData[G]},
+		If[AssociationQ[d], FPGWord[G, #] & /@ d["Words"], $Failed]]
+
+
+FinitelyPresentedGroup /: GroupElementQ[G_FinitelyPresentedGroup, FPGWord[G_, _List]] :=
+	True
+FinitelyPresentedGroup /: GroupElementQ[_FinitelyPresentedGroup, _] :=
+	False
+
+
+FinitelyPresentedGroup /:
+	GroupElementPosition[G_FinitelyPresentedGroup, FPGWord[G_, w_List]] :=
+		With[{d = RegularData[G]},
+			If[AssociationQ[d],
+				ElementPosition[d["Table"], 2 G["GeneratorCount"], w],
+				$Failed]]
+
+
+FinitelyPresentedGroup /:
+	GroupElementToWord[G_FinitelyPresentedGroup, FPGWord[G_, w_List]] :=
+		FreeReduce[w]
+
+
+FinitelyPresentedGroup /:
+	GroupElementFromWord[G_FinitelyPresentedGroup, w : {___Integer}] /;
+		ValidSubgroupWordQ[w, G["GeneratorCount"]] :=
+			FPGWord[G, w]
+
+
+FinitelyPresentedGroup /: GroupMultiplicationTable[G_FinitelyPresentedGroup] :=
+	With[{d = RegularData[G]},
+		If[AssociationQ[d],
+			With[{t = d["Table"], nc = 2 G["GeneratorCount"]},
+				Transpose @ Table[
+					Fold[t[[#1, #2]] &, Range @ Length[t], ToColumns[w, nc]],
+					{w, d["Words"]}]],
+			$Failed]]
+
+
+FinitelyPresentedGroup /: CayleyGraph[G_FinitelyPresentedGroup] :=
+	With[{d = RegularData[G]},
+		If[AssociationQ[d],
+			CayleyGraph @ PermutationGroup[
+				PermutationCycles /@
+					Transpose[d["Table"][[All, ;; G["GeneratorCount"]]]]],
+			$Failed]]
 
 
 (* ::Subsection:: *)

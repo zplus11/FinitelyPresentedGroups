@@ -254,7 +254,8 @@ CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] :=
 (*The coset table of the trivial subgroup is the regular action of a finite group, so a word is trivial exactly when tracing it from coset 1 returns to coset 1. The table is cached per group; failures (infinite or too large groups) are cached too, so they are not retried:*)
 
 
-$WordProblemCache = <||>;
+If[\[Not] AssociationQ @ $WordProblemCache,
+	$WordProblemCache = <||>];
 WordProblemTable[G_FinitelyPresentedGroup] :=
 	If[KeyExistsQ[$WordProblemCache, G],
 		$WordProblemCache[G],
@@ -267,6 +268,52 @@ WordProblem[G_FinitelyPresentedGroup, word_List] :=
 		If[MatrixQ[t, IntegerQ],
 			Fold[t[[#1, #2]] &, 1, ToColumns[word, 2 G["GeneratorCount"]]] === 1,
 			$Failed]]
+
+
+(* ::Subsection:: *)
+(*Regular enumeration*)
+
+
+$RegularCosetLimit = 100000;
+If[\[Not] AssociationQ @ $RegularCache,
+	$RegularCache = <||>];
+
+
+ElementPosition[t_, nc_Integer, w_List] :=
+	Fold[t[[#1, #2]] &, 1, ToColumns[w, nc]]
+
+
+RegularData[G_FinitelyPresentedGroup] :=
+	Module[
+		{ng, nc, t, words, frontier, next},
+
+		If[\[Not] KeyExistsQ[$RegularCache, G],
+			If[Length[$RegularCache] > 50, $RegularCache = <||>];
+			ng = G["GeneratorCount"];
+			nc = 2 ng;
+			t = Quiet @ CosetTable[G, {}, "MaxCosets" -> $RegularCosetLimit];
+			$RegularCache[G] =
+				If[\[Not] MatrixQ[t, IntegerQ],
+					$Failed,
+					words = ConstantArray[None, Length[t]];
+					words[[1]] = {};
+					frontier = {1};
+					While[frontier =!= {},
+						frontier = Flatten[
+							Reap[
+								Do[
+									next = t[[c, col]];
+									If[words[[next]] === None,
+										words[[next]] =
+											Append[words[[c]], If[col <= ng, col, col - nc - 1]];
+										Sow[next]],
+									{c, frontier}, {col, nc}]][[2]],
+							1]];
+					<|"Table" -> t, "Words" -> words|>]];
+
+		If[$RegularCache[G] === $Failed,
+			Message[FinitelyPresentedGroup::NotEnumerable, $RegularCosetLimit]];
+		$RegularCache[G]]
 
 
 (* ::Section:: *)
