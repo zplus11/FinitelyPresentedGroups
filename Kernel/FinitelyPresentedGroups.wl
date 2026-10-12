@@ -445,14 +445,14 @@ FPGWord /:
 
 
 FPGWord /: NonCommutativeMultiply[ws : FPGWord[G_FinitelyPresentedGroup, _List] ..] :=
-	FPGWord[G, Join @@ (Last /@ {ws})]
+	FPGWordReduce @ FPGWord[G, Join @@ (Last /@ {ws})]
 FPGWord /: NonCommutativeMultiply[ws : FPGWord[_FinitelyPresentedGroup, _List] ..] /;
 	Length[DeleteDuplicates[First /@ {ws}]] > 1 :=
 		(Message[FPGWord::DifferentGroups]; $Failed)
 
 
 FPGWord /: Power[FPGWord[G_FinitelyPresentedGroup, w_List], n_Integer] :=
-	FPGWord[G,
+	FPGWordReduce @ FPGWord[G,
 		If[n >= 0,
 			Join @@ ConstantArray[w, n],
 			Join @@ ConstantArray[InvertWord[w], -n]]]
