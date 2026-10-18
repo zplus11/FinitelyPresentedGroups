@@ -155,7 +155,7 @@ FinitelyPresentedGroup[CyclicGroup[n_Integer?Positive]] :=
 	Module[
 		{a = GeneratorSymbols[1]},
 		
-		FinitelyPresentedGroup[{a}, {a^n}]]
+		FinitelyPresentedGroup[a, a^n]]
 
 
 FinitelyPresentedGroup[DihedralGroup[n_Integer?Positive]] :=
