@@ -127,6 +127,8 @@ ValidRelatorQ[rel_, map_Association] :=
 	MatchQ[
 		Quiet @ Check[ParseWord[rel, map], $Failed],
 		{___Integer}]
+ValidRelatorQ[lhs_ == rhs_, map_Association] :=
+	ValidRelatorQ[lhs, map] && ValidRelatorQ[rhs, map]
 
 
 (* ::Text:: *)
@@ -145,40 +147,56 @@ FinitelyPresentedGroup[gens_List, rels_List] /; \[Not] ValidRelatorsQ[gens, rels
 (*PermutationGroup -> FinitelyPresentedGroup*)
 
 
+GeneratorSymbols[k_Integer] :=
+	Array[Symbol["Global`x" <> ToString[#]] &, k]
+
+
+FinitelyPresentedGroup[CyclicGroup[n_Integer?Positive]] :=
+	Module[
+		{a = GeneratorSymbols[1]},
+		
+		FinitelyPresentedGroup[a, a^n]]
+
+
+FinitelyPresentedGroup[DihedralGroup[n_Integer?Positive]] :=
+	Module[
+		{a, b},
+		
+		{a, b} = GeneratorSymbols[2];
+		FinitelyPresentedGroup[{a, b}, {a^n, b^2, (a ** b)^2}]]
+
+
+FinitelyPresentedGroup[AbelianGroup[ns : {__Integer?Positive}]] :=
+	Module[
+		{x = GeneratorSymbols[Length[ns]]},
+		
+		FinitelyPresentedGroup[x,
+			Join[
+				MapThread[#1^#2 &, {x, ns}],
+				(#1 ** #2 ** #1^-1 ** #2^-1 &) @@@ Subsets[x, {2}]]]]
+
+
+FinitelyPresentedGroup[SymmetricGroup[n_Integer /; n >= 2]] :=
+	Module[
+		{s = GeneratorSymbols[n - 1]},
+		
+		FinitelyPresentedGroup[s,
+			Join[
+				#^2 & /@ s,
+				Table[(s[[i]] ** s[[i + 1]])^3, {i, n - 2}],
+				Flatten @ Table[(s[[i]] ** s[[j]])^2, {i, n - 1}, {j, i + 2, n - 1}]]]]
+
+
 FinitelyPresentedGroup[group : Alternatives[
-    _PermutationGroup,
-    _CyclicGroup,
-    _DihedralGroup,
-    _SymmetricGroup,
-    _AlternatingGroup,
-    _AbelianGroup,
-    _MathieuGroupM11,
-    _MathieuGroupM12,
-    _MathieuGroupM22,
-    _MathieuGroupM23,
-    _MathieuGroupM24,
-    _HigmanSimsGroupHS,
-    _McLaughlinGroupMcL,
-    _JankoGroupJ1,
-    _JankoGroupJ2,
-    _JankoGroupJ3,
-    _JankoGroupJ4,
-    _ConwayGroupCo1,
-    _ConwayGroupCo2,
-    _ConwayGroupCo3,
-    _SuzukiGroupSuz,
-    _HeldGroupHe,
-    _RudvalisGroupRu,
-    _FischerGroupFi22,
-    _FischerGroupFi23,
-    _FischerGroupFi24Prime,
-    _TitsGroupT,
-    _ONanGroupON,
-    _HaradaNortonGroupHN,
-    _ThompsonGroupTh,
-    _LyonsGroupLy,
-    _BabyMonsterGroupB,
-    _MonsterGroupM
+	_PermutationGroup, _CyclicGroup, _DihedralGroup, _SymmetricGroup,
+	_AlternatingGroup, _AbelianGroup, _MathieuGroupM11, _MathieuGroupM12,
+	_MathieuGroupM22, _MathieuGroupM23, _MathieuGroupM24, _HigmanSimsGroupHS,
+	_McLaughlinGroupMcL, _JankoGroupJ1, _JankoGroupJ2, _JankoGroupJ3,
+	_JankoGroupJ4, _ConwayGroupCo1, _ConwayGroupCo2, _ConwayGroupCo3,
+	_SuzukiGroupSuz, _HeldGroupHe, _RudvalisGroupRu, _FischerGroupFi22,
+	_FischerGroupFi23, _FischerGroupFi24Prime, _TitsGroupT, _ONanGroupON,
+	_HaradaNortonGroupHN, _ThompsonGroupTh, _LyonsGroupLy, _BabyMonsterGroupB,
+	_MonsterGroupM
 ]] :=
 	Module[
 		{perms, n, k, words, frontier, h, rels, syms, toWord},
@@ -210,7 +228,7 @@ FinitelyPresentedGroup[group : Alternatives[
 				1],
 			{}];
 
-		syms = Array[Symbol["Global`x" <> ToString[#]] &, k];
+		syms = GeneratorSymbols[k];
 
 		toWord = Function[w,
 			If[w === {},
