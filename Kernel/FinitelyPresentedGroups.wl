@@ -313,6 +313,16 @@ FinitelyPresentedGroup /: CayleyGraph[G_FinitelyPresentedGroup] :=
 			$Failed]]
 
 
+FinitelyPresentedGroup /: PermutationGroup[G_FinitelyPresentedGroup] :=
+	With[
+		{d = RegularData[G]},
+		
+		If[AssociationQ[d],
+			PermutationGroup[
+				PermutationCycles /@ Transpose[d["Table"][[All, ;; G["GeneratorCount"]]]]],
+			$Failed]]
+
+
 (* ::Subsection:: *)
 (*Group words*)
 
