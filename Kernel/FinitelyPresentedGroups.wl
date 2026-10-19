@@ -325,11 +325,14 @@ FPGWord[G : FinitelyPresentedGroup[gens_List, rels_List], word : Except[{_Intege
 FPGWord /: FPGWord[G_FinitelyPresentedGroup, w_List]["Order"] :=
 	With[
 		{d = RegularData[G]},
-		
+
 		If[AssociationQ[d],
-			LCM @@ (Length /@ First @ PermutationCycles @
-				Fold[d["Table"][[#1, #2]] &, Range @ Length[d["Table"]],
-					ToColumns[w, 2 G["GeneratorCount"]]]),
+			With[
+				{lengths = Length /@ First @ PermutationCycles @
+					Fold[d["Table"][[#1, #2]] &, Range @ Length[d["Table"]],
+						ToColumns[w, 2 G["GeneratorCount"]]]},
+
+				If[lengths === {}, 1, LCM @@ lengths]],
 			$Failed]]
 
 
