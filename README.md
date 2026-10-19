@@ -31,42 +31,62 @@ In[3]:= GroupOrder[FinitelyPresentedGroup[SymmetricGroup[4]]]
 Out[3]= 24
 ```
 
+Make round trips between a permutation group and the corresponding FPG:
+
+```mathematica
+In[4]:= CyclicGroup[3]
+% // FinitelyPresentedGroup
+% // PermutationGroup
+% // FinitelyPresentedGroup
+Out[4]= CyclicGroup[3]
+Out[5]= FinitelyPresentedGroup[{x1}, {x1^3}]
+Out[6]= PermutationGroup[{Cycles[{{1, 2, 3}}]}]
+Out[7]= FinitelyPresentedGroup[{x1}, {x1 ** x1 ** x1}]
+```
+
 Create group words using generator indices (negative for inverses) or the generators themselves, and reduce them using the relators:
 
 ```mathematica
-In[4]:= w = FPGWord[G, a^10 ** b^5];
-In[5]:= FPGWordReduce[w]
+In[8]:= w = FPGWord[G, a^10 ** b^5];
+In[9]:= FPGWordReduce[w]
+```
+
+Find order of a word:
+
+```mathematica
+In[10]:= w["Order"]
+Out[10]= 
 ```
 
 Words can be multiplied, inverted, raised to powers and compared:
 
 ```mathematica
-In[6]:= FPGWord[G, {1, 2}] == FPGWord[G, {-2, -1}]
-Out[6]= True
+In[11]:= FPGWord[G, {1, 2}] == FPGWord[G, {-2, -1}]
+Out[11]= True
 ```
 
 Enumerate the cosets of a subgroup. The result is a matrix with one row per coset, whose columns correspond to the generators followed by their inverses in reverse order:
 
 ```mathematica
-In[7]:= t = CosetTable[G, {a}]
-Out[7]= {{1, 2, 3, 1}, {3, 3, 1, 3}, {2, 1, 2, 2}}
+In[12]:= t = CosetTable[G, {a}]
+Out[12]= {{1, 2, 3, 1}, {3, 3, 1, 3}, {2, 1, 2, 2}}
 ```
 
 The index of the subgroup is the number of rows, and the order of the group is the index of the trivial subgroup:
 
 ```mathematica
-In[8]:= Length[t]
-Out[8]= 3
+In[13]:= Length[t]
+Out[13]= 3
 
-In[9]:= GroupOrder[G]
-Out[9]= 6
+In[14]:= GroupOrder[G]
+Out[14]= 6
 ```
 
 Check if a word lies in the subgroup by following it through the table from the first coset:
 
 ```mathematica
-In[10]:= Fold[t[[#1, #2]] &, 1, {2, 1, 2, -1}] == 1
-Out[10]= True
+In[15]:= Fold[t[[#1, #2]] &, 1, {2, 1, 2, -1}] == 1
+Out[15]= True
 ```
 
 ## Contributions
@@ -74,8 +94,10 @@ Out[10]= True
 Please feel free to give your feedback on the package, or to contribute with an issue or a PR! The test files are in [Tests/](Tests/) directory and may be run to ensure everything functions correctly.
 
 ## Version log
- 
-**Version 1.0.0,** *on 11 October, 2026* &mdash; first release.
+
+**Version 1.1.0,** *on 19 October, 2026* &mdash; order of an element; convert named groups to FPG, round trips between permutation groups and FPGs, abelian invariants.
+
+**v1.0.0,** *on 11 October, 2026* &mdash; first release.
 
 **v0.0.2,** *on 10 October, 2026* &mdash; coset enumeration.
 

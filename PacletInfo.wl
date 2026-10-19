@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Naman T.",
     "License" -> "MIT",
     "PublisherID" -> "Taggar",
-    "Version" -> "1.0.0",
+    "Version" -> "1.1.0",
     "WolframVersion" -> "12+",
     "PrimaryContext" -> "Taggar`FinitelyPresentedGroups`",
     "DocumentationURL" -> "https://resources.wolframcloud.com/PacletRepository/resources",
