@@ -2,6 +2,8 @@
 
 FinitelyPresentedGroups is a Wolfram language paclet (package) for working with finitely presented groups: defining a group by generators and relators, manipulating group words, and enumerating cosets of subgroups using the Todd-Coxeter algorithm.
 
+On Wolfram Paclet Repository: https://resources.wolframcloud.com/PacletRepository/resources/Taggar/FinitelyPresentedGroups/
+
 ## Installation
 
 Run in any mathematica notebook (local or cloud):
