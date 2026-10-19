@@ -25,7 +25,7 @@ TestCreate[Inverse[FPGWord[g, {1, 2}]], FPGWord[g, {-2, -1}], TestID -> "FPGWord
 TestCreate[Inverse[Inverse[FPGWord[g, {1, 2}]]], FPGWord[g, {1, 2}], TestID -> "FPGWord-InverseInvolution"]
 TestCreate[FPGWord[g, {1}] ** FPGWord[g, {2}], FPGWord[g, {1, 2}], TestID -> "FPGWord-Product"]
 TestCreate[FPGWordReduce[FPGWord[g, {1}] ** FPGWord[g, {1}]], FPGWord[g, {}], TestID -> "FPGWord-ProductReduces"]
-TestCreate[FPGWord[g, {1, 2}]^3, FPGWord[g, {1, 2, 1, 2, 1, 2}], TestID -> "FPGWord-Power"]
+TestCreate[FPGWord[g, {1, 2}]^3, FPGWord[g, {1, 2}], TestID -> "FPGWord-Power"]
 TestCreate[FPGWord[g, {1, 2}] == FPGWord[g, {-2, -1}], True, TestID -> "FPGWord-EqualByRelator"]
 TestCreate[FPGWord[f, {1}] == FPGWord[f, {2}], False, TestID -> "FPGWord-EqualFreeGroup"]
 
