@@ -24,28 +24,9 @@ InvertWord[word_List] :=
 (*Subgroup generators may be integer lists, FPGWord objects of the group, or words in the generators:*)
 
 
-ClearAll[ParseSubgroupWord, SubgroupWords, ValidSubgroupWordQ, ValidSubgroupWordsQ, ToColumns];
-
-ParseSubgroupWord[G_, FPGWord[G_, w_List], _Association] :=
-	w
-ParseSubgroupWord[_, w : {___Integer}, _Association] :=
-	w
-ParseSubgroupWord[_, w_, map_Association] :=
-	Quiet @ Check[ParseWord[w, map], $Failed]
-
+ClearAll[SubgroupWords, ToColumns];
 SubgroupWords[G_FinitelyPresentedGroup, hgens_List] :=
-	Module[
-		{map},
-
-		map = AssociationThread[G["GeneratorList"], Range @ G["GeneratorCount"]];
-		ParseSubgroupWord[G, #, map] & /@ hgens]
-
-ValidSubgroupWordQ[w_, n_Integer] :=
-	MatchQ[w, {___Integer}] && AllTrue[w, 0 < Abs[#] <= n &]
-
-ValidSubgroupWordsQ[G_FinitelyPresentedGroup, hgens_List] :=
-	And @@ (ValidSubgroupWordQ[#, G["GeneratorCount"]] & /@ SubgroupWords[G, hgens])
-
+	ToWord[G, #] & /@ hgens
 ToColumns[word_List, nc_Integer] :=
 	If[# > 0, #, nc + 1 + #] & /@ word
 
@@ -212,7 +193,7 @@ Options[CosetTable] = {"MaxCosets" -> 1000000};
 
 
 CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] /;
-	\[Not] ValidSubgroupWordsQ[G, hgens] :=
+	MemberQ[SubgroupWords[G, hgens], $Failed] :=
 		(Message[CosetTable::BadSubgroupGenerators]; $Failed)
 
 
