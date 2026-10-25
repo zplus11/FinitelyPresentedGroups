@@ -583,7 +583,7 @@ EvaluateWord[word_List, images_List, mult_, inv_, one_] :=
 
 ClearAll[FoxEvaluate];
 FoxEvaluate[G_, terms_List, None, _, _, _] :=
-	Total[#1 FPGWord[G, #2] & @@@ terms]
+	Total[#1 WordToExpression[G["GeneratorList"], #2] & @@@ terms]
 FoxEvaluate[_, terms_List, images_List, mult_, inv_, one_] :=
 	If[terms === {},
 		0 one,
@@ -592,8 +592,8 @@ FoxEvaluate[_, terms_List, images_List, mult_, inv_, one_] :=
 
 ClearAll[FoxD];
 FoxD::usage =
-	"FoxD[word, g] gives the Fox derivative of the group word with respect to the generator g (a generator or its index), as a linear combination of group words.
-FoxD[word, g, images] evaluates the result by sending the generators to images.";
+	"FoxD[group, word, g] gives the Fox derivative of word with respect to the generator g.
+FoxD[G, word, g, images] evaluates the result by sending the generators to images.";
 FoxD::BadGenerator =
 	"`1` is not a generator of the group.";
 FoxD::BadImages =
@@ -607,12 +607,14 @@ GeneratorIndex[G_FinitelyPresentedGroup, g_] :=
 		True, First[FirstPosition[G["GeneratorList"], g, {$Failed}]]]
 
 
-FoxD[FPGWord[G_FinitelyPresentedGroup, w_List], g_, images : (_List | None) : None,
+FoxD[G_FinitelyPresentedGroup, x_, g_, images : (_List | None) : None,
 	OptionsPattern[]] :=
 	Module[
-		{j = GeneratorIndex[G, g]},
+		{w = ToWord[G, x], j = GeneratorIndex[G, g]},
 
 		Which[
+			w === $Failed,
+			Message[FinitelyPresentedGroup::BadWord]; $Failed,
 			\[Not] IntegerQ[j],
 			Message[FoxD::BadGenerator, g]; $Failed,
 			images =!= None && Length[images] =!= G["GeneratorCount"],
@@ -628,8 +630,8 @@ FoxD[FPGWord[G_FinitelyPresentedGroup, w_List], g_, images : (_List | None) : No
 
 ClearAll[AlexanderMatrix];
 AlexanderMatrix::usage =
-	"AlexanderMatrix[G] gives the Alexander matrix of the finitely presented group G, whose (i, j) entry is the Fox derivative of the i-th relator with respect to the j-th generator, as a linear combination of group words of the free group.
-AlexanderMatrix[G, images] sends the generators to images, so that the entries lie in the ring of the images.";
+	"AlexanderMatrix[group] gives the Alexander matrix of group.
+AlexanderMatrix[group, images] sends the generators of group to images.";
 AlexanderMatrix::BadImages =
 	"The images must be a list with one entry per generator.";
 Options[AlexanderMatrix] = {"Multiply" -> Times, "Invert" -> (1/# &), "One" -> 1};
