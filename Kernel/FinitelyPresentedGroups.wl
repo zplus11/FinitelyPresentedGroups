@@ -16,8 +16,8 @@ CosetTable;
 FinitelyPresentedGroup;
 FoxD;
 FreeGroup;
-FPGWord;
-FPGWordReduce;
+ElementReduce;
+ElementEqualQ;
 
 
 Begin["`Private`"];
@@ -96,6 +96,7 @@ FreeGroup[gens_List] := FinitelyPresentedGroup[gens, {}]
 (*Parsing group words*)
 
 
+ClearAll[ParseWord];
 ParseWord[1, _Association] :=
 	{}
 ParseWord[x_, map_Association] /; KeyExistsQ[map, x] :=
@@ -108,15 +109,37 @@ ParseWord[x_^n_Integer, map_Association] :=
 	If[n >= 0,
 		Flatten[ConstantArray[ParseWord[x, map], n]],
 		Flatten[ConstantArray[Reverse[-ParseWord[x, map]], -n]]]
-ParseWord[x_, map_Association] /; IntegerQ[x] :=
-	{x}
+(* ParseWord[x_, map_Association] /; IntegerQ[x] :=
+	{x}  not needed anymore *)
 ParseWord[_, _Association] := $Failed
+ParseWord[w : {___Integer}, map_Association] /; AllTrue[w, 0 < Abs[#] <= Length[map] &] :=
+	w
+
+
+ClearAll[ToWord];
+ToWord[G_FinitelyPresentedGroup, x_] :=
+	Module[
+		{map = AssociationThread[G["GeneratorList"], Range @ G["GeneratorCount"]], w},
+
+		w = Quiet @ Check[ParseWord[x, map], $Failed];
+		If[MatchQ[w, {___Integer}], w, $Failed]]
+
+
+ClearAll[WordToExpression];
+WordToExpression[_List, {}] :=
+	1
+WordToExpression[gens_List, w_List] :=
+	With[
+		{factors = With[{x = First[#], m = Length[#]}, gens[[Abs[x]]]^(Sign[x] m)] & /@ Split[w]},
+
+		If[Length[factors] == 1, First[factors], NonCommutativeMultiply @@ factors]]
 
 
 (* ::Text:: *)
 (*Free reduction*)
 
 
+ClearAll[FreeReduce];
 FreeReduce[word_List] :=
 	Module[
 		{stack, top = 0, x},
@@ -130,12 +153,14 @@ FreeReduce[word_List] :=
 		Take[stack, top]]
 
 
+ClearAll[ValidRelatorsQ];
 ValidRelatorsQ[gens_List, rels_List] :=
 	Module[
 		{map},
 
 		map = AssociationThread[gens, Range[Length[gens]]];
 		And @@ (ValidRelatorQ[#, map] & /@ rels)]
+ClearAll[ValidRelatorQ];
 ValidRelatorQ[rel_, map_Association] :=
 	MatchQ[
 		Quiet @ Check[ParseWord[rel, map], $Failed],
@@ -160,6 +185,7 @@ FinitelyPresentedGroup[gens_List, rels_List] /; \[Not] ValidRelatorsQ[gens, rels
 (*PermutationGroup -> FinitelyPresentedGroup*)
 
 
+ClearAll[GeneratorSymbols];
 GeneratorSymbols[k_Integer] :=
 	Array[Symbol["Global`x" <> ToString[#]] &, k]
 
@@ -243,11 +269,7 @@ FinitelyPresentedGroup[group : Alternatives[
 
 		syms = GeneratorSymbols[k];
 
-		toWord = Function[w,
-			If[w === {},
-				1,
-				NonCommutativeMultiply @@ (If[# > 0, syms[[#]], syms[[-#]]^-1] & /@ w)]];
-		FinitelyPresentedGroup[syms, toWord /@ rels]]
+		FinitelyPresentedGroup[syms, WordToExpression[syms, #] & /@ rels]]
 
 
 (* ::Subsection:: *)
@@ -263,37 +285,34 @@ FinitelyPresentedGroup /: GroupOrder[G_FinitelyPresentedGroup] :=
 
 
 FinitelyPresentedGroup /: GroupGenerators[G_FinitelyPresentedGroup] :=
-	FPGWord[G, #] & /@ G["GeneratorList"]
+	G["GeneratorList"]
 
 
 FinitelyPresentedGroup /: GroupElements[G_FinitelyPresentedGroup] :=
 	With[{d = RegularData[G]},
-		If[AssociationQ[d], FPGWord[G, #] & /@ d["Words"], $Failed]]
+		If[AssociationQ[d],
+			WordToExpression[G["GeneratorList"], #] & /@ d["Words"],
+			$Failed]]
 
 
-FinitelyPresentedGroup /: GroupElementQ[G_FinitelyPresentedGroup, FPGWord[G_, _List]] :=
-	True
-FinitelyPresentedGroup /: GroupElementQ[_FinitelyPresentedGroup, _] :=
-	False
+FinitelyPresentedGroup /: GroupElementQ[G_FinitelyPresentedGroup, x_] :=
+	ToWord[G, x] =!= $Failed
 
 
-FinitelyPresentedGroup /:
-	GroupElementPosition[G_FinitelyPresentedGroup, FPGWord[G_, w_List]] :=
-		With[{d = RegularData[G]},
-			If[AssociationQ[d],
-				ElementPosition[d["Table"], 2 G["GeneratorCount"], w],
-				$Failed]]
+FinitelyPresentedGroup /: GroupElementPosition[G_FinitelyPresentedGroup, x_] :=
+	With[{w = ToWord[G, x], d = RegularData[G]},
+		If[w =!= $Failed && AssociationQ[d],
+			ElementPosition[d["Table"], 2 G["GeneratorCount"], w],
+			$Failed]]
 
 
-FinitelyPresentedGroup /:
-	GroupElementToWord[G_FinitelyPresentedGroup, FPGWord[G_, w_List]] :=
-		FreeReduce[w]
+FinitelyPresentedGroup /: GroupElementToWord[G_FinitelyPresentedGroup, x_] :=
+	With[{w = ToWord[G, x]}, If[w === $Failed, $Failed, FreeReduce[w]]]
 
 
-FinitelyPresentedGroup /:
-	GroupElementFromWord[G_FinitelyPresentedGroup, w : {___Integer}] /;
-		ValidSubgroupWordQ[w, G["GeneratorCount"]] :=
-			FPGWord[G, w]
+FinitelyPresentedGroup /: GroupElementFromWord[G_FinitelyPresentedGroup, w : {___Integer}] /;
+	ToWord[G, w] =!= $Failed :=
+		WordToExpression[G["GeneratorList"], w]
 
 
 FinitelyPresentedGroup /: GroupMultiplicationTable[G_FinitelyPresentedGroup] :=
@@ -326,100 +345,7 @@ FinitelyPresentedGroup /: PermutationGroup[G_FinitelyPresentedGroup] :=
 
 
 (* ::Subsection:: *)
-(*Group words*)
-
-
-ClearAll[FPGWord];
-FPGWord::usage =
-	"FPGWord[G, indices] represents a group word in G determined by indices.";
-FPGWord::BadWord =
-	"The word contains an invalid generator index.";
-FPGWord::DifferentGroups =
-	"The words belong to different groups.";
-
-
-FPGWord[FinitelyPresentedGroup[gens_List, rels_List], ints : { _Integer .. }] /;
-	\[Not] And @@ (IntegerQ[#] && # =!= 0 && Abs[#] <= Length[gens] &
-		/@ ints) :=
-			(Message[FPGWord::BadWord]; $Failed)
-
-
-FPGWord[w_FPGWord] := w
-
-
-FPGWord[G : FinitelyPresentedGroup[gens_List, rels_List], word : Except[{_Integer ...}]] :=
-	Module[
-		{map, w},
-
-		map = AssociationThread[gens, Range @ Length[gens]];
-		w = ParseWord[word, map];
-
-		If[w === $Failed,
-			Message[FPGWord::BadWord]; $Failed,
-			FPGWord[G, w]]]
-
-
-(* ::Text:: *)
-(*Order of a word:*)
-
-
-FPGWord /: FPGWord[G_FinitelyPresentedGroup, w_List]["Order"] :=
-	With[
-		{d = RegularData[G]},
-
-		If[AssociationQ[d],
-			With[
-				{lengths = Length /@ First @ PermutationCycles @
-					Fold[d["Table"][[#1, #2]] &, Range @ Length[d["Table"]],
-						ToColumns[w, 2 G["GeneratorCount"]]]},
-
-				If[lengths === {}, 1, LCM @@ lengths]],
-			$Failed]]
-
-
-(* ::Text:: *)
-(*Formatting*)
-
-
-MakeBoxes[FPGWord[G_, {}], form_] :=
-	ToBoxes @ Iconize[FPGWord[G, {}], 1]
-MakeBoxes[FPGWord[G_, w_List], form_] :=
-	Module[
-		{gens = G["GeneratorList"], n, k, u, s},
-
-		n = Length[w];
-		k = First @ Select[Range[n], Divisible[n, #] &&
-		w === Flatten @ ConstantArray[w[[;; #]], n/#] &, 1];
-		u = w[[;; k]];
-		s = Row[
-			With[
-				{x = First[#], m = Length[#]},
-				If[x > 0,
-					If[m == 1, gens[[x]], Superscript[gens[[x]], m]],
-						If[m == 1, Superscript[gens[[-x]], -1],
-							Superscript[gens[[-x]], -m]]]] & /@ Split[u]];
-		ToBoxes @ Iconize[FPGWord[G, w],
-			If[k == n, s, Superscript[Row[{"(", s, ")"}], n/k]]]]
-
-
-ClearAll[FPGWordQ, FPGWordLength, FPGWordGenerators];
-FPGWordQ[FPGWord[G_FinitelyPresentedGroup, word_List]] := True
-FPGWordQ[_] := False
-FPGWordLength[FPGWord[_, word_List]] := Length[word]
-FPGWordGenerators[FPGWord[G_FinitelyPresentedGroup, word_List]] :=
-	DeleteDuplicates[Abs /@ word]
-
-
-ClearAll[SubstituteWord];
-SubstituteWord[word_List, images_List] :=
-	Flatten[Replace[word, {
-		i_Integer /; i > 0 :> images[[i, 2]],
-		i_Integer /; i < 0 :> Reverse[-images[[-i, 2]]]
-	}, {1}]]
-
-
-(* ::Text:: *)
-(*Word reduction*)
+(*Words*)
 
 
 CyclicConjugates[word_List] :=
@@ -476,70 +402,35 @@ ReduceByRelators[G_FinitelyPresentedGroup, word_List] :=
 		w]
 
 
-ClearAll[FPGWordReduce];
-FPGWordReduce::usage =
-	"FPGWordReduce[word] reduces the given group word.
-FPGWordReduce[G, indices] reduces the word given by indices in G.";
+ClearAll[ElementReduce];
+ElementReduce::usage =
+	"ElementReduce[G, word] reduces word using the relators of G.";
+FinitelyPresentedGroup::BadWord =
+	"The word is not valid in the generators of the group.";
 
 
-FPGWordReduce[FPGWord[G_FinitelyPresentedGroup, word_List]] :=
-	FPGWord[G, ReduceByRelators[G, word]]
-FPGWordReduce[G_FinitelyPresentedGroup, word_List] :=
-	FPGWordReduce[FPGWord[G, word]]
+ElementReduce[G_FinitelyPresentedGroup, x_] :=
+	With[{w = ToWord[G, x]},
+		If[w === $Failed,
+			(Message[FinitelyPresentedGroup::BadWord]; $Failed),
+			With[{r = ReduceByRelators[G, w]},
+				If[MatchQ[x, {___Integer}], r, WordToExpression[G["GeneratorList"], r]]]]]
 
 
-(* ::Text:: *)
-(*Algebra of words*)
+ClearAll[ElementEqualQ];
+ElementEqualQ::usage =
+	"ElementEqualQ[group, x, y] checks whether x and y are equal in group.";
 
 
-FPGWordReduce[$Failed] := $Failed
-
-
-FPGWord /:
-	Inverse[FPGWord[
-		G : FinitelyPresentedGroup[gens_List, rels_List],
-		word_List
-	]] :=
-		FPGWordReduce @ FPGWord[G, Reverse[-word]]
-
-
-FPGWord /: NonCommutativeMultiply[ws : FPGWord[G_FinitelyPresentedGroup, _List] ..] :=
-	FPGWordReduce @ FPGWord[G, Join @@ (Last /@ {ws})]
-FPGWord /: NonCommutativeMultiply[ws : FPGWord[_FinitelyPresentedGroup, _List] ..] /;
-	Length[DeleteDuplicates[First /@ {ws}]] > 1 :=
-		(Message[FPGWord::DifferentGroups]; $Failed)
-
-
-FPGWord /: Power[FPGWord[G_FinitelyPresentedGroup, w_List], n_Integer] :=
-	FPGWordReduce @ FPGWord[G,
-		If[n >= 0,
-			Join @@ ConstantArray[w, n],
-			Join @@ ConstantArray[InvertWord[w], -n]]]
-
-
-FPGWord /: Equal[FPGWord[G_FinitelyPresentedGroup, w1_List],
-	FPGWord[G_FinitelyPresentedGroup, w2_List]] /;
-		FreeReduce[w1] === FreeReduce[w2] ||
-			ReduceByRelators[G, Join[w1, InvertWord[w2]]] === {} :=
-				True
-FPGWord /: Equal[FPGWord[G_FinitelyPresentedGroup, w1_List],
-	FPGWord[G_FinitelyPresentedGroup, w2_List]] /;
-		RelatorRules[G] === {} && FreeReduce[w1] =!= FreeReduce[w2] :=
-			False
-
-
-(* ::Text:: *)
-(*Word problem - decide by tracing the word through the regular coset table*)
-
-
-FPGWord /: Equal[FPGWord[G_FinitelyPresentedGroup, w1_List],
-	FPGWord[G_FinitelyPresentedGroup, w2_List]] /;
-		WordProblem[G, Join[w1, InvertWord[w2]]] === True :=
-			True
-FPGWord /: Equal[FPGWord[G_FinitelyPresentedGroup, w1_List],
-	FPGWord[G_FinitelyPresentedGroup, w2_List]] /;
-		WordProblem[G, Join[w1, InvertWord[w2]]] === False :=
-			False
+ElementEqualQ[G_FinitelyPresentedGroup, x_, y_] :=
+	With[{u = ToWord[G, x], v = ToWord[G, y]},
+		If[u === $Failed || v === $Failed,
+			(Message[FinitelyPresentedGroup::BadWord]; $Failed),
+			With[{r = ReduceByRelators[G, Join[u, InvertWord[v]]]},
+				Which[
+					r === {}, True,
+					RelatorRules[G] === {}, False,
+					True, WordProblem[G, r]]]]]
 
 
 (* ::Subsection:: *)
