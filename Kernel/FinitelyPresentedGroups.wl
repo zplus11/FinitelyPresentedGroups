@@ -11,8 +11,10 @@ BeginPackage["Taggar`FinitelyPresentedGroups`"];
 (*Declare your public symbols here:*)
 
 
+AlexanderMatrix;
 CosetTable;
 FinitelyPresentedGroup;
+FoxD;
 FreeGroup;
 ElementReduce;
 ElementEqualQ;
@@ -429,6 +431,115 @@ ElementEqualQ[G_FinitelyPresentedGroup, x_, y_] :=
 					r === {}, True,
 					RelatorRules[G] === {}, False,
 					True, WordProblem[G, r]]]]]
+
+
+(* ::Subsection:: *)
+(*Fox derivatives*)
+
+
+(* ::Text:: *)
+(*The Fox derivative d/dx_j is determined by d(x_j) = 1, d(x_k) = 0 for k != j and d(uv) = d(u) + u d(v). For a freely reduced word l_1 ... l_n this gives d(w) = Sum_k prefix_{k-1} d(l_k), where d(x_j^-1) = -x_j^-1. The result is returned as a list of {coefficient, prefix word} terms, with equal prefixes merged:*)
+
+
+ClearAll[FoxTerms];
+FoxTerms[word_List, j_Integer] :=
+	Module[
+		{w = FreeReduce[word], terms = {}},
+
+		Do[
+			Which[
+				w[[k]] == j,
+				AppendTo[terms, {1, Take[w, k - 1]}],
+				w[[k]] == -j,
+				AppendTo[terms, {-1, Take[w, k]}]],
+			{k, Length[w]}];
+		KeyValueMap[
+			{#2, #1} &,
+			DeleteCases[
+				Merge[Rule @@@ (Reverse /@ terms), Total],
+				0]]]
+
+
+(* ::Text:: *)
+(*Evaluation of a word in a ring: the images of the generators are multiplied with the option "Multiply" (default Times), inverted with "Invert" (default 1/#&), and "One" is the identity of the ring. For matrices use e.g. "Multiply" -> Dot, "Invert" -> Inverse, "One" -> IdentityMatrix[n]:*)
+
+
+ClearAll[EvaluateWord];
+EvaluateWord[word_List, images_List, mult_, inv_, one_] :=
+	Fold[
+		mult[#1, If[#2 > 0, images[[#2]], inv[images[[-#2]]]]] &,
+		one,
+		word]
+
+
+ClearAll[FoxEvaluate];
+FoxEvaluate[G_, terms_List, None, _, _, _] :=
+	Total[#1 WordToExpression[G["GeneratorList"], #2] & @@@ terms]
+FoxEvaluate[_, terms_List, images_List, mult_, inv_, one_] :=
+	If[terms === {},
+		0 one,
+		Total[#1 EvaluateWord[#2, images, mult, inv, one] & @@@ terms]]
+
+
+ClearAll[FoxD];
+FoxD::usage =
+	"FoxD[group, word, g] gives the Fox derivative of word with respect to the generator g.
+FoxD[G, word, g, images] evaluates the result by sending the generators to images.";
+FoxD::BadGenerator =
+	"`1` is not a generator of the group.";
+FoxD::BadImages =
+	"The images must be a list with one entry per generator.";
+Options[FoxD] = {"Multiply" -> Times, "Invert" -> (1/# &), "One" -> 1};
+
+
+GeneratorIndex[G_FinitelyPresentedGroup, g_] :=
+	Which[
+		IntegerQ[g] && 1 <= g <= G["GeneratorCount"], g,
+		True, First[FirstPosition[G["GeneratorList"], g, {$Failed}]]]
+
+
+FoxD[G_FinitelyPresentedGroup, x_, g_, images : (_List | None) : None,
+	OptionsPattern[]] :=
+	Module[
+		{w = ToWord[G, x], j = GeneratorIndex[G, g]},
+
+		Which[
+			w === $Failed,
+			Message[FinitelyPresentedGroup::BadWord]; $Failed,
+			\[Not] IntegerQ[j],
+			Message[FoxD::BadGenerator, g]; $Failed,
+			images =!= None && Length[images] =!= G["GeneratorCount"],
+			Message[FoxD::BadImages]; $Failed,
+			True,
+			FoxEvaluate[G, FoxTerms[w, j], images,
+				OptionValue["Multiply"], OptionValue["Invert"], OptionValue["One"]]]]
+
+
+(* ::Subsection:: *)
+(*Alexander matrix*)
+
+
+ClearAll[AlexanderMatrix];
+AlexanderMatrix::usage =
+	"AlexanderMatrix[group] gives the Alexander matrix of group.
+AlexanderMatrix[group, images] sends the generators of group to images.";
+AlexanderMatrix::BadImages =
+	"The images must be a list with one entry per generator.";
+Options[AlexanderMatrix] = {"Multiply" -> Times, "Invert" -> (1/# &), "One" -> 1};
+
+
+AlexanderMatrix[G_FinitelyPresentedGroup, images : (_List | None) : None,
+	OptionsPattern[]] :=
+	Module[
+		{ng = G["GeneratorCount"], rels = NormaliseRelators[G]},
+
+		If[images =!= None && Length[images] =!= ng,
+			Message[AlexanderMatrix::BadImages];
+			$Failed,
+			Table[
+				FoxEvaluate[G, FoxTerms[r, j], images,
+					OptionValue["Multiply"], OptionValue["Invert"], OptionValue["One"]],
+				{r, rels}, {j, ng}]]]
 
 
 (* ::Section::Closed:: *)
