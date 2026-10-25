@@ -13,11 +13,11 @@ BeginPackage["Taggar`FinitelyPresentedGroups`"];
 
 AlexanderMatrix;
 CosetTable;
+ElementEqualQ;
+ElementReduce;
 FinitelyPresentedGroup;
 FoxD;
 FreeGroup;
-ElementReduce;
-ElementEqualQ;
 
 
 Begin["`Private`"];
@@ -404,7 +404,7 @@ ReduceByRelators[G_FinitelyPresentedGroup, word_List] :=
 
 ClearAll[ElementReduce];
 ElementReduce::usage =
-	"ElementReduce[G, word] reduces word using the relators of G.";
+	"ElementReduce[group, word] reduces word using the relators of group.";
 FinitelyPresentedGroup::BadWord =
 	"The word is not valid in the generators of the group.";
 
