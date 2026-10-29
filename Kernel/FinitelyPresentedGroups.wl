@@ -483,8 +483,8 @@ FoxEvaluate[_, terms_List, images_List, mult_, inv_, one_] :=
 
 ClearAll[FoxD];
 FoxD::usage =
-	"FoxD[group, word, g] gives the Fox derivative of word with respect to the generator g.
-FoxD[G, word, g, images] evaluates the result by sending the generators to images.";
+	"FoxD[group, word, g] gives the Fox derivative of word with respect to the generator g in group.
+FoxD[group, word, g, images] evaluates the result by sending the generators of group to images.";
 FoxD::BadGenerator =
 	"`1` is not a generator of the group.";
 FoxD::BadImages =
