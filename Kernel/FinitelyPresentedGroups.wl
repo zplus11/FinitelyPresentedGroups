@@ -31,12 +31,12 @@ Begin["`Private`"];
 (*Load other files:*)
 
 
+$FPGPattern = _FinitelyPresentedGroup | _FreeGroup;
+
+
 Get /@ {
 	"Taggar`FinitelyPresentedGroups`CosetTable`"
 }
-
-
-$FPGPattern = _FinitelyPresentedGroup | _FreeGroup;
 
 
 (* ::Text:: *)
@@ -387,11 +387,14 @@ FinitelyPresentedGroup /: PermutationGroup[G_FinitelyPresentedGroup] :=
 
 
 FreeGroup /:
-	(f : (GroupGenerators | GroupElements | GroupElementQ |
-	GroupElementPosition | GroupElementToWord |
-	GroupElementFromWord | GroupMultiplicationTable |
-	CayleyGraph | PermutationGroup))[G_FreeGroup] :=
-		f[FinitelyPresentedGroup[G]]
+	(f : (GroupGenerators | GroupElements | GroupElementQ | GroupElementPosition |
+		GroupElementToWord | GroupElementFromWord | GroupMultiplicationTable |
+		CayleyGraph | PermutationGroup))[G_FreeGroup, args___] :=
+			f[FinitelyPresentedGroup[G], args]
+
+
+FreeGroup /: GroupOrder[FreeGroup[gens_List]] :=
+	If[gens === {}, 1, Infinity]
 
 
 (* ::Subsection:: *)
@@ -408,12 +411,11 @@ NormaliseRelator[rel_, map_Association] :=
 	FreeReduce[ParseWord[rel, map]];
 
 
-NormaliseRelators[FinitelyPresentedGroup[gens_List, rels_List]] :=
-	Module[
-		{map},
+NormaliseRelators[G : $FPGPattern] :=
+	With[
+		{map = AssociationThread[G["GeneratorList"], Range @ G["GeneratorCount"]]},
 
-		map = AssociationThread[gens, Range[Length[gens]]];
-		NormaliseRelator[#, map] & /@ rels]
+		NormaliseRelator[#, map] & /@ G["RelatorList"]]
 
 
 $RelatorRulesCache = <||>;
