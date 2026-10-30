@@ -192,12 +192,12 @@ Options[CosetTable] = {"MaxCosets" -> 1000000};
 (*Invalid forms:*)
 
 
-CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] /;
+CosetTable[G : $FPGPattern, hgens_List, OptionsPattern[]] /;
 	MemberQ[SubgroupWords[G, hgens], $Failed] :=
 		(Message[CosetTable::BadSubgroupGenerators]; $Failed)
 
 
-CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] :=
+CosetTable[G : $FPGPattern, hgens_List, OptionsPattern[]] :=
 	Module[
 		{ng, nc, max, subs, rels, words, res, n, live, renum, table},
 
@@ -237,14 +237,14 @@ CosetTable[G_FinitelyPresentedGroup, hgens_List, OptionsPattern[]] :=
 
 If[\[Not] AssociationQ @ $WordProblemCache,
 	$WordProblemCache = <||>];
-WordProblemTable[G_FinitelyPresentedGroup] :=
+WordProblemTable[G : $FPGPattern] :=
 	If[KeyExistsQ[$WordProblemCache, G],
 		$WordProblemCache[G],
 		If[Length[$WordProblemCache] > 50, $WordProblemCache = <||>];
 		$WordProblemCache[G] = Quiet @ CosetTable[G, {}, "MaxCosets" -> 20000]]
 
 (* True or False if the group could be enumerated, $Failed otherwise *)
-WordProblem[G_FinitelyPresentedGroup, word_List] :=
+WordProblem[G : $FPGPattern, word_List] :=
 	With[{t = WordProblemTable[G]},
 		If[MatrixQ[t, IntegerQ],
 			Fold[t[[#1, #2]] &, 1, ToColumns[word, 2 G["GeneratorCount"]]] === 1,
@@ -264,7 +264,7 @@ ElementPosition[t_, nc_Integer, w_List] :=
 	Fold[t[[#1, #2]] &, 1, ToColumns[w, nc]]
 
 
-RegularData[G_FinitelyPresentedGroup] :=
+RegularData[G : $FPGPattern] :=
 	Module[
 		{ng, nc, t, words, frontier, next},
 
