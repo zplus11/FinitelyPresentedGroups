@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Naman T.",
     "License" -> "MIT",
     "PublisherID" -> "Taggar",
-    "Version" -> "1.1.0",
+    "Version" -> "1.2.0",
     "WolframVersion" -> "12+",
     "PrimaryContext" -> "Taggar`FinitelyPresentedGroups`",
     "DocumentationURL" -> "https://resources.wolframcloud.com/PacletRepository/resources",
@@ -17,10 +17,12 @@ PacletObject[
         "Root" -> "Kernel",
         "Context" -> {"Taggar`FinitelyPresentedGroups`"},
         "Symbols" -> {
+          "Taggar`FinitelyPresentedGroups`AlexanderMatrix",
           "Taggar`FinitelyPresentedGroups`CosetTable",
+          "Taggar`FinitelyPresentedGroups`ElementEqualQ",
+          "Taggar`FinitelyPresentedGroups`ElementReduce",
           "Taggar`FinitelyPresentedGroups`FinitelyPresentedGroup",
-          "Taggar`FinitelyPresentedGroups`FPGWord",
-          "Taggar`FinitelyPresentedGroups`FPGWordReduce",
+          "Taggar`FinitelyPresentedGroups`FoxD",
           "Taggar`FinitelyPresentedGroups`FreeGroup"
         }
       },
