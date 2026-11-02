@@ -1,0 +1,547 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     21296,        539]
+NotebookOptionsPosition[     16365,        436]
+NotebookOutlinePosition[     16908,        454]
+CellTagsIndexPosition[     16865,        451]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Finitely Presented Groups Package", "GuideTitle",
+ CellChangeTimes->{{4.0025046314369564`*^9, 4.002504635690628*^9}},
+ CellID->324650058,ExpressionUUID->"1f952e6b-460d-d24f-af00-a3b378ed0693"],
+
+Cell["\<\
+FinitelyPresentedGroups provides symbolic finitely presented groups in the \
+Wolfram Language. A group is defined by generators and relators, and \
+permutation groups, including the named groups such as symmetric and Mathieu \
+groups, can be converted to presentations. The paclet computes Todd-Coxeter \
+coset enumeration and allows working with group elements as words.\
+\>", "GuideAbstract",
+ CellChangeTimes->{
+  4.002504593317383*^9, {4.0025046370955887`*^9, 4.0025047132383595`*^9}},
+ CellID->234341862,ExpressionUUID->"2f917284-8205-e046-a6b3-c7f2c1aa3874"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "GuideFunctionsSection",
+ CellChangeTimes->{{4.0025047276758747`*^9, 4.0025047284294777`*^9}},
+ CellID->342125638,ExpressionUUID->"36b1dc5c-a607-d747-92c0-cabbed806718"],
+
+Cell[CellGroupData[{
+
+Cell["Representation", "GuideFunctionsSubsection",
+ CellChangeTimes->{{4.0025047341812763`*^9, 4.0025047364435577`*^9}},
+ CellID->88922652,ExpressionUUID->"f7b86863-1bb2-f148-a490-c95665209df7"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["FinitelyPresentedGroup",
+   BaseStyle->"Link",
+   ButtonData->
+    "paclet:Taggar/FinitelyPresentedGroups/ref/FinitelyPresentedGroup"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c40ac8e4-27e1-4161-a8df-4d4f38357a23",ExpressionUUID->
+  "b96ef1fa-ea26-ad4f-9e80-6c9927ecd5d1"],
+ " \[LongDash] finitely presented group"
+}], "GuideText",
+ CellChangeTimes->{{4.002504600590292*^9, 4.0025046034930496`*^9}, {
+  4.0025047238621693`*^9, 4.0025047238621693`*^9}, {4.0025047564227943`*^9, 
+  4.002504777421097*^9}},
+ CellID->78684841,ExpressionUUID->"00c3deaf-9001-ab47-9982-d7f8cd52000d"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["FreeGroup",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/FreeGroup"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62",ExpressionUUID->
+  "75a4b534-6786-9049-b3d3-0f1943a360e0"],
+ " \[LongDash] free group"
+}], "GuideText",
+ CellChangeTimes->{{4.0025047411778183`*^9, 4.0025047473568344`*^9}, {
+  4.002504779624796*^9, 4.0025047816218376`*^9}},
+ CellID->469604307,ExpressionUUID->"e302f651-aa72-c64f-8adf-eaafa75788b3"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["ElementReduce",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/ElementReduce"]], 
+  "InlineGuideFunction",ExpressionUUID->
+  "6a4d761f-cd61-5045-98d4-cd0ba9d6d11b"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["ElementEqualQ",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/ElementEqualQ"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"8be5d984-cffa-4963-8ed9-9a1ac74f7f8b",ExpressionUUID->
+  "de26e4e7-04ad-3a49-b265-81097edb117f"],
+ Cell[BoxData[
+  RowBox[{
+  Cell[TextData[StyleBox[
+   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
+    "bb05c76c-2c1a-f04b-8fef-3cccaa584b6f"], 
+   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
+    "bb12bab9-a9f3-2e47-bde2-65d733543a13", 
+     "509d1a23-f5d0-9b45-9719-6cdf5bb6a99d"], $CellContext`cellobj$$ = 
+    CellObject[
+    "b7e667b2-4d72-4f43-8cba-b0e7ecc1bb78", 
+     "522b9342-44ca-bc4f-b621-1178ba7c6891"]}, 
+    TemplateBox[{
+      GraphicsBox[{{
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         CircleBox[{0, 0}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
+       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
+       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
+       BaselinePosition -> (Center -> 
+        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
+     "InlineListingAddButton"],
+    Initialization:>($CellContext`nbobj$$ = 
+      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
+  "InlineListingAddButton",ExpressionUUID->
+  "b7e667b2-4d72-4f43-8cba-b0e7ecc1bb78"]
+}], "InlineGuideFunctionListing",
+ CellChangeTimes->{{4.0025049018365726`*^9, 4.002504917440609*^9}},
+ CellID->65288700,ExpressionUUID->"0acb7fef-dbe5-9442-82d9-e58c87bb7aef"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Group elements", "GuideFunctionsSubsection",
+ CellChangeTimes->{{4.0025048280269737`*^9, 4.002504832021063*^9}},
+ CellID->13772336,ExpressionUUID->"2783d2de-113a-7747-8d8b-08ca38fc7a18"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["CosetTable",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/CosetTable"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"af3a8390-7f73-4821-abe3-8666f56a48ed",ExpressionUUID->
+  "f869358a-f6a2-7f44-aaa6-612f44d4cd5a"],
+ " \[LongDash] coset enumeration in a group"
+}], "GuideText",
+ CellChangeTimes->{{4.0025049310769043`*^9, 4.002504942550173*^9}},
+ CellID->447591108,ExpressionUUID->"342b0bb7-0750-544f-92f7-5655c3ad59f1"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["FoxD",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/FoxD"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"af3a8390-7f73-4821-abe3-8666f56a48ed",ExpressionUUID->
+  "616a5af4-8bc9-9a42-95a2-4ec1f5d35894"],
+ " \[LongDash] Fox derivatives of elements"
+}], "GuideText",
+ CellChangeTimes->{{4.002504946921484*^9, 4.002504955784664*^9}},
+ CellID->356122758,ExpressionUUID->"77b95def-b30e-7c4c-b2ff-86d15a044f1c"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["AlexanderMatrix",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/AlexanderMatrix"]], 
+  "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"af3a8390-7f73-4821-abe3-8666f56a48ed",ExpressionUUID->
+  "516b0b40-16d7-8b48-a772-c27d4a94975f"],
+ " \[LongDash] Alexander matrix of a group"
+}], "GuideText",
+ CellChangeTimes->{{4.002504959574518*^9, 4.002504970032284*^9}},
+ CellID->219312785,ExpressionUUID->"e393357f-91ec-1c4f-8604-1fb4b96b1df0"]
+}, Open  ]],
+
+Cell["\t", "GuideDelimiter",
+ CellID->703953349,ExpressionUUID->"3e452ed3-8a7f-5846-a909-3e0d919a93dd"],
+
+Cell[CellGroupData[{
+
+Cell["Integration", "GuideFunctionsSubsection",
+ CellChangeTimes->{{4.0025051706893654`*^9, 4.00250517710544*^9}, 
+   4.0025053335173626`*^9},
+ CellID->9687737,ExpressionUUID->"05bff930-6d26-0a46-9ff4-0cd9eb7e6767"],
+
+Cell[TextData[{
+ "The package also supports using in-built group theoretic functionalities \
+such as the following, on a ",
+ Cell[BoxData[
+  ButtonBox["FinitelyPresentedGroup",
+   BaseStyle->"Link",
+   ButtonData->
+    "paclet:Taggar/FinitelyPresentedGroups/ref/FinitelyPresentedGroup"]], 
+  "InlineFormula",ExpressionUUID->"eb987331-4d17-6d41-885a-83cfdcc631b0"],
+ " or a ",
+ Cell[BoxData[
+  ButtonBox["FreeGroup",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Taggar/FinitelyPresentedGroups/ref/FreeGroup"]], 
+  "InlineFormula",ExpressionUUID->"4f0e0a10-d713-664c-9da0-9bdf3d8e935f"],
+ ":"
+}], "GuideText",
+ CellChangeTimes->{{4.0025053385617714`*^9, 4.002505370558996*^9}},
+ CellID->925114435,ExpressionUUID->"01215362-fc8e-2244-b703-53f66e7b4238"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["GroupOrder",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"af3a8390-7f73-4821-abe3-8666f56a48ed",ExpressionUUID->
+  "f695cd93-855b-214a-993a-8e39f0518cff"],
+ " \[LongDash] number of elements in a group"
+}], "GuideText",
+ CellChangeTimes->{{4.002505185311159*^9, 4.002505208269333*^9}},
+ CellID->189410137,ExpressionUUID->"ba7a2d75-c0f2-234c-9719-87a610812f5f"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["GroupElements",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"af3a8390-7f73-4821-abe3-8666f56a48ed",ExpressionUUID->
+  "1f6b3b03-fad3-874d-86ce-ea2cef111aca"],
+ " \[LongDash] list of elements of a group"
+}], "GuideText",
+ CellChangeTimes->{{4.0025052271478596`*^9, 4.002505243992676*^9}},
+ CellID->36725048,ExpressionUUID->"e42f2fcf-065b-8045-8945-c9a72d49363c"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["GroupElementQ",
+   BaseStyle->"Link"]], "InlineGuideFunction",ExpressionUUID->
+  "d082da0a-e116-d842-828a-8f63ce0e52b7"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["GroupElementToWord",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"31a8ce78-b56c-470d-bae1-288f3fa51d86",ExpressionUUID->
+  "fc0da0bb-811d-fc4e-9e90-54439e4cfa95"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["GroupElementFromWord",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"7ec7ea86-6e73-4d7d-9bd2-e38a0f892c3e",ExpressionUUID->
+  "3d83ff6e-4d60-5e44-9f95-29a413ffa843"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["GroupElementPosition",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"48bacb12-5d35-4b6c-bf31-87182d90b68b",ExpressionUUID->
+  "e029f7db-fbe4-034d-8939-a741b381f0ab"],
+ Cell[BoxData[
+  RowBox[{
+  Cell[TextData[StyleBox[
+   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
+    "55737fc0-06db-324b-b013-911507733755"], 
+   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
+    "bb12bab9-a9f3-2e47-bde2-65d733543a13", 
+     "509d1a23-f5d0-9b45-9719-6cdf5bb6a99d"], $CellContext`cellobj$$ = 
+    CellObject[
+    "5ead6f78-5b07-204b-a240-6e0924c55db7", 
+     "8287d084-c945-1947-a0a8-4e7317f037bb"]}, 
+    TemplateBox[{
+      GraphicsBox[{{
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         CircleBox[{0, 0}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
+       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
+       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
+       BaselinePosition -> (Center -> 
+        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
+     "InlineListingAddButton"],
+    Initialization:>($CellContext`nbobj$$ = 
+      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
+  "InlineListingAddButton",ExpressionUUID->
+  "5ead6f78-5b07-204b-a240-6e0924c55db7"]
+}], "InlineGuideFunctionListing",
+ CellChangeTimes->{{4.002505263017309*^9, 4.002505302081749*^9}},
+ CellID->268392,ExpressionUUID->"660186de-5bf5-7847-922b-d3996d0a643b"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["CayleyGraph",
+   BaseStyle->"Link"]], "InlineGuideFunction",ExpressionUUID->
+  "23eed904-d213-6942-8371-d071449bd534"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["GroupMultiplicationTable",
+   BaseStyle->"Link"]], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"848d401c-b118-4861-b5b9-220cf86ea8f5",ExpressionUUID->
+  "65734cde-e7e5-5b44-bac4-d3271cca2526"],
+ Cell[BoxData[
+  RowBox[{
+  Cell[TextData[StyleBox[
+   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
+    "00df7e44-b06b-554a-bcd3-ee2d5fa9e7e3"], 
+   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
+    "bb12bab9-a9f3-2e47-bde2-65d733543a13", 
+     "509d1a23-f5d0-9b45-9719-6cdf5bb6a99d"], $CellContext`cellobj$$ = 
+    CellObject[
+    "6f1c50f6-bb83-6a4a-a745-24a1973f98b7", 
+     "c8d31227-3970-b141-a960-d54387e9b261"]}, 
+    TemplateBox[{
+      GraphicsBox[{{
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         CircleBox[{0, 0}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
+       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
+       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
+       BaselinePosition -> (Center -> 
+        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
+     "InlineListingAddButton"],
+    Initialization:>($CellContext`nbobj$$ = 
+      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
+  "InlineListingAddButton",ExpressionUUID->
+  "6f1c50f6-bb83-6a4a-a745-24a1973f98b7"]
+}], "InlineGuideFunctionListing",
+ CellChangeTimes->{{4.0025053071842194`*^9, 4.002505321623684*^9}},
+ CellID->2250955,ExpressionUUID->"25f275cc-7c0c-3141-8251-3f9a771d1123"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tech Notes", "GuideTutorialsSection",
+ CellID->1278421,ExpressionUUID->"89c5a164-bcf0-0d45-b8b5-73a24f04bfab"],
+
+Cell["XXXX", "GuideTutorial",
+ CellID->873057138,ExpressionUUID->"52c15bd0-a362-4f40-a3eb-35a8a65590de"],
+
+Cell["XXXX", "GuideTutorial",
+ CellID->49339664,ExpressionUUID->"49a320a9-07e9-3b4b-b44c-59effb015861"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "GuideMoreAboutSection",
+ CellChangeTimes->{{3.8430423939366693`*^9, 3.843042395176153*^9}},
+ CellID->48481419,ExpressionUUID->"fa840a9a-3538-2745-b518-9b1e0ef1a1f6"],
+
+Cell["GroupTheory", "GuideMoreAbout",
+ CellChangeTimes->{{4.002505386152647*^9, 4.002505387430958*^9}},
+ CellID->231194567,ExpressionUUID->"f63c3d9b-8bb0-6943-be55-a1f84e50191a"],
+
+Cell["XXXX", "GuideMoreAbout",
+ CellID->612630024,ExpressionUUID->"1343601c-cb13-f54a-abeb-8997de83acd5"]
+}, Open  ]],
+
+Cell["Related Links", "GuideRelatedLinksSection",
+ CellID->436748679,ExpressionUUID->"2c5c1609-0a77-6549-a5d7-925f35a69784"],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->183949723,ExpressionUUID->"986b67a4-bb58-1b40-a233-09fc322771d3"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"baede163-fc92-434a-a69b-6b46f2ef5a51"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"219bd70f-dbd4-d546-a8c3-4b50049f13b4"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->"3d62c25f-5951-e74e-b291-377935599d31"]
+}], "History",
+ CellID->651238,ExpressionUUID->"5e7e5ccc-d64a-a243-85ff-87aaea89a5a4"],
+
+Cell[CellGroupData[{
+
+Cell["Categorization", "CategorizationSection",
+ CellID->298020821,ExpressionUUID->"71c6fc01-f68e-f448-8fcf-6323b3575642"],
+
+Cell["Guide", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->30087465,ExpressionUUID->"40f8e921-80ef-1946-995f-3643020520a1"],
+
+Cell["Taggar/FinitelyPresentedGroups", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->677316894,ExpressionUUID->"b193384f-ad47-da4c-9a34-fa606cf2e0d7"],
+
+Cell["Taggar`FinitelyPresentedGroups`", "Categorization",
+ CellLabel->"Context",
+ CellID->46484763,ExpressionUUID->"c768fb8d-0280-a240-966c-81a38df0bb13"],
+
+Cell["Taggar/FinitelyPresentedGroups/guide/FinitelyPresentedGroups", \
+"Categorization",
+ CellLabel->"URI",
+ CellID->740086401,ExpressionUUID->"98e9f5f9-e683-884b-a849-1b7833bdb94d"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->276854749,ExpressionUUID->"7a281f38-03c5-2f41-ba8d-ef34a2ba5b6e"],
+
+Cell["XXXX", "Keywords",
+ CellID->376680924,ExpressionUUID->"b4a1120c-0f53-1545-933c-03c12e2ec966"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{1024.5, 543.75},
+WindowMargins->{{-6, Automatic}, {Automatic, -6}},
+TaggingRules-><|"Paclet" -> "Taggar/FinitelyPresentedGroups"|>,
+FrontEndVersion->"15.0 for Microsoft Windows (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "GuidePageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"bb12bab9-a9f3-2e47-bde2-65d733543a13"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 198, 2, 86, "GuideTitle",ExpressionUUID->"1f952e6b-460d-d24f-af00-a3b378ed0693",
+ CellID->324650058],
+Cell[777, 26, 574, 9, 80, "GuideAbstract",ExpressionUUID->"2f917284-8205-e046-a6b3-c7f2c1aa3874",
+ CellID->234341862]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1388, 40, 178, 2, 71, "GuideFunctionsSection",ExpressionUUID->"36b1dc5c-a607-d747-92c0-cabbed806718",
+ CellID->342125638],
+Cell[CellGroupData[{
+Cell[1591, 46, 194, 2, 36, "GuideFunctionsSubsection",ExpressionUUID->"f7b86863-1bb2-f148-a490-c95665209df7",
+ CellID->88922652],
+Cell[1788, 50, 665, 15, 23, "GuideText",ExpressionUUID->"00c3deaf-9001-ab47-9982-d7f8cd52000d",
+ CellID->78684841],
+Cell[2456, 67, 570, 13, 23, "GuideText",ExpressionUUID->"e302f651-aa72-c64f-8adf-eaafa75788b3",
+ CellID->469604307],
+Cell[3029, 82, 2139, 52, 24, "InlineGuideFunctionListing",ExpressionUUID->"0acb7fef-dbe5-9442-82d9-e58c87bb7aef",
+ CellID->65288700]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5205, 139, 192, 2, 36, "GuideFunctionsSubsection",ExpressionUUID->"2783d2de-113a-7747-8d8b-08ca38fc7a18",
+ CellID->13772336],
+Cell[5400, 143, 537, 12, 23, "GuideText",ExpressionUUID->"342b0bb7-0750-544f-92f7-5655c3ad59f1",
+ CellID->447591108],
+Cell[5940, 157, 522, 12, 23, "GuideText",ExpressionUUID->"77b95def-b30e-7c4c-b2ff-86d15a044f1c",
+ CellID->356122758],
+Cell[6465, 171, 544, 12, 23, "GuideText",ExpressionUUID->"e393357f-91ec-1c4f-8604-1fb4b96b1df0",
+ CellID->219312785]
+}, Open  ]],
+Cell[7024, 186, 103, 1, 26, "GuideDelimiter",ExpressionUUID->"3e452ed3-8a7f-5846-a909-3e0d919a93dd",
+ CellID->703953349],
+Cell[CellGroupData[{
+Cell[7152, 191, 215, 3, 36, "GuideFunctionsSubsection",ExpressionUUID->"05bff930-6d26-0a46-9ff4-0cd9eb7e6767",
+ CellID->9687737],
+Cell[7370, 196, 750, 18, 38, "GuideText",ExpressionUUID->"01215362-fc8e-2244-b703-53f66e7b4238",
+ CellID->925114435],
+Cell[8123, 216, 462, 10, 23, "GuideText",ExpressionUUID->"ba7a2d75-c0f2-234c-9719-87a610812f5f",
+ CellID->189410137],
+Cell[8588, 228, 464, 10, 23, "GuideText",ExpressionUUID->"e42f2fcf-065b-8045-8945-c9a72d49363c",
+ CellID->36725048],
+Cell[9055, 240, 2612, 62, 40, "InlineGuideFunctionListing",ExpressionUUID->"660186de-5bf5-7847-922b-d3996d0a643b",
+ CellID->268392],
+Cell[11670, 304, 1993, 48, 24, "InlineGuideFunctionListing",ExpressionUUID->"25f275cc-7c0c-3141-8251-3f9a771d1123",
+ CellID->2250955]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13712, 358, 116, 1, 73, "GuideTutorialsSection",ExpressionUUID->"89c5a164-bcf0-0d45-b8b5-73a24f04bfab",
+ CellID->1278421],
+Cell[13831, 361, 104, 1, 23, "GuideTutorial",ExpressionUUID->"52c15bd0-a362-4f40-a3eb-35a8a65590de",
+ CellID->873057138],
+Cell[13938, 364, 103, 1, 23, "GuideTutorial",ExpressionUUID->"49a320a9-07e9-3b4b-b44c-59effb015861",
+ CellID->49339664]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14078, 370, 189, 2, 73, "GuideMoreAboutSection",ExpressionUUID->"fa840a9a-3538-2745-b518-9b1e0ef1a1f6",
+ CellID->48481419],
+Cell[14270, 374, 178, 2, 23, "GuideMoreAbout",ExpressionUUID->"f63c3d9b-8bb0-6943-be55-a1f84e50191a",
+ CellID->231194567],
+Cell[14451, 378, 105, 1, 23, "GuideMoreAbout",ExpressionUUID->"1343601c-cb13-f54a-abeb-8997de83acd5",
+ CellID->612630024]
+}, Open  ]],
+Cell[14571, 382, 124, 1, 73, "GuideRelatedLinksSection",ExpressionUUID->"2c5c1609-0a77-6549-a5d7-925f35a69784",
+ CellID->436748679],
+Cell[CellGroupData[{
+Cell[14720, 387, 110, 1, 71, "MetadataSection",ExpressionUUID->"986b67a4-bb58-1b40-a233-09fc322771d3",
+ CellID->183949723],
+Cell[14833, 390, 470, 11, 25, "History",ExpressionUUID->"5e7e5ccc-d64a-a243-85ff-87aaea89a5a4",
+ CellID->651238],
+Cell[CellGroupData[{
+Cell[15328, 405, 122, 1, 20, "CategorizationSection",ExpressionUUID->"71c6fc01-f68e-f448-8fcf-6323b3575642",
+ CellID->298020821],
+Cell[15453, 408, 132, 2, 70, "Categorization",ExpressionUUID->"40f8e921-80ef-1946-995f-3643020520a1",
+ CellID->30087465],
+Cell[15588, 412, 158, 2, 70, "Categorization",ExpressionUUID->"b193384f-ad47-da4c-9a34-fa606cf2e0d7",
+ CellID->677316894],
+Cell[15749, 416, 154, 2, 70, "Categorization",ExpressionUUID->"c768fb8d-0280-a240-966c-81a38df0bb13",
+ CellID->46484763],
+Cell[15906, 420, 182, 3, 70, "Categorization",ExpressionUUID->"98e9f5f9-e683-884b-a849-1b7833bdb94d",
+ CellID->740086401]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[16125, 428, 110, 1, 20, "KeywordsSection",ExpressionUUID->"7a281f38-03c5-2f41-ba8d-ef34a2ba5b6e",
+ CellID->276854749],
+Cell[16238, 431, 99, 1, 70, "Keywords",ExpressionUUID->"b4a1120c-0f53-1545-933c-03c12e2ec966",
+ CellID->376680924]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
