@@ -250,7 +250,7 @@ FinitelyPresentedGroup[AbelianGroup[ns : {__Integer?Positive}]] :=
 		FinitelyPresentedGroup[x,
 			Join[
 				MapThread[#1^#2 &, {x, ns}],
-				(#1 ** #2 ** #1^-1 ** #2^-1 &) @@@ Subsets[x, {2}]]]]
+				(#1 ** #2 ** (#1^-1) ** (#2^-1) &) @@@ Subsets[x, {2}]]]]
 
 
 FinitelyPresentedGroup[SymmetricGroup[n_Integer /; n >= 2]] :=
