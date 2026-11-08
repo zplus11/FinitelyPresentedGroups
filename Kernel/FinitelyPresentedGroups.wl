@@ -219,6 +219,31 @@ FinitelyPresentedGroup[FreeGroup[gens_List]] :=
 	FinitelyPresentedGroup[gens, {}]
 
 
+(* ::Text:: *)
+(*A free product of two finitely presented groups is merely concatenation of the generators and relators. For this purpose, we demand that the generator sets must be disjoint:*)
+
+
+FinitelyPresentedGroup /:
+	NonCommutativeMultiply[G1_FinitelyPresentedGroup, G2_FinitelyPresentedGroup] /;
+	G1["GeneratorList"] \[Intersection] G2["GeneratorList"] != {} :=
+		$Failed
+
+
+FinitelyPresentedGroup /:
+	NonCommutativeMultiply[G1_FinitelyPresentedGroup, G2_FinitelyPresentedGroup] :=
+		FinitelyPresentedGroup[G1["GeneratorList"] \[Union] G2["GeneratorList"],
+			G1["RelatorList"] \[Union] G2["RelatorList"]]
+FinitelyPresentedGroup /:
+	NonCommutativeMultiply[G1_FinitelyPresentedGroup, G2_FreeGroup] :=
+		NonCommutativeMultiply[G1, FinitelyPresentedGroup[G2]]
+FinitelyPresentedGroup /:
+	NonCommutativeMultiply[G1_FreeGroup, G2_FinitelyPresentedGroup] :=
+		NonCommutativeMultiply[FinitelyPresentedGroup[G1], G2]
+FreeGroup /:
+	NonCommutativeMultiply[G1_FreeGroup, G2_FreeGroup] :=
+		NonCommutativeMultiply[FinitelyPresentedGroup[G1], FinitelyPresentedGroup[G2]]
+
+
 (* ::Subsection:: *)
 (*PermutationGroup -> FinitelyPresentedGroup*)
 
