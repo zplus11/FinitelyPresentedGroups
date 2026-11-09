@@ -31,9 +31,6 @@ Begin["`Private`"];
 (*Load other files:*)
 
 
-$FPGPattern = _FinitelyPresentedGroup | _FreeGroup;
-
-
 Get /@ {
 	"Taggar`FinitelyPresentedGroups`CosetTable`"
 }
@@ -108,7 +105,7 @@ ParseWord[w : {___Integer}, map_Association] /; AllTrue[w, 0 < Abs[#] <= Length[
 
 
 ClearAll[ToWord];
-ToWord[G : $FPGPattern, x_] :=
+ToWord[G : _FinitelyPresentedGroup | _FreeGroup, x_] :=
 	Module[
 		{map = AssociationThread[G["GeneratorList"], Range @ G["GeneratorCount"]], w},
 
@@ -252,7 +249,7 @@ FreeGroup /:
 
 ClearAll[GeneratorSymbols];
 GeneratorSymbols[k_Integer] :=
-	Array[Symbol["Global`x" <> ToString[#]] &, k]
+	Table[Unique["x"], k]
 
 
 FinitelyPresentedGroup[CyclicGroup[n_Integer?Positive]] :=
@@ -414,14 +411,10 @@ FinitelyPresentedGroup /: PermutationGroup[G_FinitelyPresentedGroup] :=
 
 
 FreeGroup /:
-	(f : (GroupGenerators | GroupElements | GroupElementQ | GroupElementPosition |
-		GroupElementToWord | GroupElementFromWord | GroupMultiplicationTable |
-		CayleyGraph | PermutationGroup))[G_FreeGroup, args___] :=
+	(f : (GroupGenerators | GroupOrder | GroupElements | GroupElementQ |
+		GroupElementPosition | GroupElementToWord | GroupElementFromWord |
+		GroupMultiplicationTable | CayleyGraph | PermutationGroup))[G_FreeGroup, args___] :=
 			f[FinitelyPresentedGroup[G], args]
-
-
-FreeGroup /: GroupOrder[FreeGroup[gens_List]] :=
-	If[gens === {}, 1, Infinity]
 
 
 (* ::Subsection:: *)
@@ -438,7 +431,7 @@ NormaliseRelator[rel_, map_Association] :=
 	FreeReduce[ParseWord[rel, map]];
 
 
-NormaliseRelators[G : $FPGPattern] :=
+NormaliseRelators[G : _FinitelyPresentedGroup | _FreeGroup] :=
 	With[
 		{map = AssociationThread[G["GeneratorList"], Range @ G["GeneratorCount"]]},
 
@@ -446,14 +439,14 @@ NormaliseRelators[G : $FPGPattern] :=
 
 
 $RelatorRulesCache = <||>;
-ComputeRelatorRules[G : $FPGPattern] :=
+ComputeRelatorRules[G : _FinitelyPresentedGroup | _FreeGroup] :=
 	DeleteDuplicates[
 		Join @@ (
 			Function[r, Join[CyclicConjugates[r], CyclicConjugates[InvertWord[r]]]] /@
 				DeleteCases[NormaliseRelators[G], {}])]
 
 
-RelatorRules[G : $FPGPattern] :=
+RelatorRules[G : _FinitelyPresentedGroup | _FreeGroup] :=
 	Module[
 		{cached = Lookup[$RelatorRulesCache, G, None], rules},
 
@@ -466,7 +459,7 @@ RelatorRules[G : $FPGPattern] :=
 			rules]]
 
 
-ReduceByRelators[G : $FPGPattern, word_List] :=
+ReduceByRelators[G : _FinitelyPresentedGroup | _FreeGroup, word_List] :=
 	Module[
 		{rules = RelatorRules[G], w = FreeReduce[word], changed = True, pos, r},
 
@@ -488,7 +481,7 @@ FinitelyPresentedGroup::BadWord =
 	"The word is not valid in the generators of the group.";
 
 
-ElementReduce[G : $FPGPattern, x_] :=
+ElementReduce[G : _FinitelyPresentedGroup | _FreeGroup, x_] :=
 	With[{w = ToWord[G, x]},
 		If[w === $Failed,
 			(Message[FinitelyPresentedGroup::BadWord]; $Failed),
@@ -501,7 +494,7 @@ ElementEqualQ::usage =
 	"ElementEqualQ[group, x, y] checks whether x and y are equal in group.";
 
 
-ElementEqualQ[G : $FPGPattern, x_, y_] :=
+ElementEqualQ[G : _FinitelyPresentedGroup | _FreeGroup, x_, y_] :=
 	With[{u = ToWord[G, x], v = ToWord[G, y]},
 		If[u === $Failed || v === $Failed,
 			(Message[FinitelyPresentedGroup::BadWord]; $Failed),
@@ -552,7 +545,7 @@ EvaluateWord[word_List, images_List, mult_, inv_, one_] :=
 
 
 ClearAll[FoxEvaluate];
-FoxEvaluate[G : $FPGPattern, terms_List, None, _, _, _] :=
+FoxEvaluate[G : _FinitelyPresentedGroup | _FreeGroup, terms_List, None, _, _, _] :=
 	Total[#1 WordToExpression[G["GeneratorList"], #2] & @@@ terms]
 FoxEvaluate[_, terms_List, images_List, mult_, inv_, one_] :=
 	If[terms === {},
@@ -571,14 +564,13 @@ FoxD::BadImages =
 Options[FoxD] = {"Multiply" -> Times, "Invert" -> (1/# &), "One" -> 1};
 
 
-GeneratorIndex[G : $FPGPattern, g_] :=
+GeneratorIndex[G : _FinitelyPresentedGroup | _FreeGroup, g_] :=
 	Which[
 		IntegerQ[g] && 1 <= g <= G["GeneratorCount"], g,
 		True, First[FirstPosition[G["GeneratorList"], g, {$Failed}]]]
 
 
-FoxD[G : $FPGPattern, x_, g_, images : (_List | None) : None,
-	OptionsPattern[]] :=
+FoxD[G : _FinitelyPresentedGroup | _FreeGroup, x_, g_, images : (_List | None) : None, OptionsPattern[]] :=
 	Module[
 		{w = ToWord[G, x], j = GeneratorIndex[G, g]},
 
@@ -607,8 +599,7 @@ AlexanderMatrix::BadImages =
 Options[AlexanderMatrix] = {"Multiply" -> Times, "Invert" -> (1/# &), "One" -> 1};
 
 
-AlexanderMatrix[G : $FPGPattern, images : (_List | None) : None,
-	OptionsPattern[]] :=
+AlexanderMatrix[G : _FinitelyPresentedGroup | _FreeGroup, images : (_List | None) : None, OptionsPattern[]] :=
 	Module[
 		{ng = G["GeneratorCount"], rels = NormaliseRelators[G]},
 
