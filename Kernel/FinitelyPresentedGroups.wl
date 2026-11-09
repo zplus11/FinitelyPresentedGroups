@@ -343,7 +343,10 @@ FinitelyPresentedGroup[group : Alternatives[
 
 
 FinitelyPresentedGroup /: GroupOrder[G_FinitelyPresentedGroup] :=
-	With[{t = CosetTable[G, {}]}, If[ListQ[t], Length[t], t]]
+	(* if the abelian invariants contain a zero, G is infite: *)
+	If[\[Not] FreeQ[G["AbelianInvariants"], 0], Infinity,
+		(* otherwise *)
+		With[{t = CosetTable[G, {}]}, If[ListQ[t], Length[t], t]]]
 
 
 FinitelyPresentedGroup /: GroupGenerators[G_FinitelyPresentedGroup] :=
