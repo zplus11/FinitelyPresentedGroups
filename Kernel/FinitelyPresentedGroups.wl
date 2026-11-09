@@ -223,10 +223,12 @@ FinitelyPresentedGroup[FreeGroup[gens_List]] :=
 (*A free product of two finitely presented groups is merely concatenation of the generators and relators. For this purpose, we demand that the generator sets must be disjoint:*)
 
 
+FinitelyPresentedGroup::DisjointGenerators =
+	"The generators of underlying groups are expected to be disjoint.";
 FinitelyPresentedGroup /:
 	NonCommutativeMultiply[G1_FinitelyPresentedGroup, G2_FinitelyPresentedGroup] /;
 	G1["GeneratorList"] \[Intersection] G2["GeneratorList"] != {} :=
-		$Failed
+		(Message[FinitelyPresentedGroup::DisjointGenerators]; $Failed)
 
 
 FinitelyPresentedGroup /:
