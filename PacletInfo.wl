@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Naman T.",
     "License" -> "MIT",
     "PublisherID" -> "Taggar",
-    "Version" -> "1.2.0",
+    "Version" -> "1.3.0",
     "WolframVersion" -> "12+",
     "PrimaryContext" -> "Taggar`FinitelyPresentedGroups`",
     "DocumentationURL" -> "https://resources.wolframcloud.com/PacletRepository/resources",
@@ -23,7 +23,8 @@ PacletObject[
           "Taggar`FinitelyPresentedGroups`ElementReduce",
           "Taggar`FinitelyPresentedGroups`FinitelyPresentedGroup",
           "Taggar`FinitelyPresentedGroups`FoxD",
-          "Taggar`FinitelyPresentedGroups`FreeGroup"
+          "Taggar`FinitelyPresentedGroups`FreeGroup",
+          "Taggar`FinitelyPresentedGroups`TietzeSimplify"
         }
       },
       {
