@@ -18,6 +18,7 @@ ElementReduce;
 FinitelyPresentedGroup;
 FoxD;
 FreeGroup;
+TietzeSimplify;
 
 
 Begin["`Private`"];
@@ -32,7 +33,8 @@ Begin["`Private`"];
 
 
 Get /@ {
-	"Taggar`FinitelyPresentedGroups`CosetTable`"
+	"Taggar`FinitelyPresentedGroups`CosetTable`",
+	"Taggar`FinitelyPresentedGroups`Simplification`"
 }
 
 
