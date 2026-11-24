@@ -266,7 +266,7 @@ FinitelyPresentedGroup[DihedralGroup[n_Integer?Positive]] :=
 		{a, b},
 		
 		{a, b} = GeneratorSymbols[2];
-		FinitelyPresentedGroup[{a, b}, {a^n, b^2, (a ** b)^2}]]
+		FinitelyPresentedGroup[{a, b}, {a^n, b^2, NonCommutativeMultiply[a, b]^2}]]
 
 
 FinitelyPresentedGroup[AbelianGroup[ns : {__Integer?Positive}]] :=
@@ -276,7 +276,7 @@ FinitelyPresentedGroup[AbelianGroup[ns : {__Integer?Positive}]] :=
 		FinitelyPresentedGroup[x,
 			Join[
 				MapThread[#1^#2 &, {x, ns}],
-				(#1 ** #2 ** (#1^-1) ** (#2^-1) &) @@@ Subsets[x, {2}]]]]
+				NonCommutativeMultiply[#1, #2, #1^-1, #2^-1] & @@@ Subsets[x, {2}]]]]
 
 
 FinitelyPresentedGroup[SymmetricGroup[n_Integer /; n >= 2]] :=
@@ -286,8 +286,8 @@ FinitelyPresentedGroup[SymmetricGroup[n_Integer /; n >= 2]] :=
 		FinitelyPresentedGroup[s,
 			Join[
 				#^2 & /@ s,
-				Table[(s[[i]] ** s[[i + 1]])^3, {i, n - 2}],
-				Flatten @ Table[(s[[i]] ** s[[j]])^2, {i, n - 1}, {j, i + 2, n - 1}]]]]
+				Table[NonCommutativeMultiply[s[[i]], s[[i + 1]]]^3, {i, n - 2}],
+				Flatten @ Table[NonCommutativeMultiply[s[[i]], s[[j]]]^2, {i, n - 1}, {j, i + 2, n - 1}]]]]
 
 
 FinitelyPresentedGroup[group : Alternatives[
