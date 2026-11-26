@@ -169,7 +169,7 @@ Please feel free to give your feedback on the package, or to contribute with an 
 
 ## Version log
 
-**Version 1.3.0,** *on 23 November, 2026* &mdash; Some general purpose updates; add `TietzeSimplify` to simplify presentations. [log](https://github.com/zplus11/FinitelyPresentedGroups/compare/v1.2.0...v1.3.0)
+**Version 1.3.0,** *on 26 November, 2026* &mdash; Some general purpose updates; add `TietzeSimplify` to simplify presentations. [log](https://github.com/zplus11/FinitelyPresentedGroups/compare/v1.2.0...v1.3.0)
 
 **v1.2.0,** *on 30 October, 2026* &mdash; API change: `FPGWord` is removed in favour of simplicity, and `FreeGroup` stays as a head rather than getting evaluated to `FinitelyPresentedGroup`. [log](https://github.com/zplus11/FinitelyPresentedGroups/compare/v1.1.0...v1.2.0)
 
