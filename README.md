@@ -55,12 +55,18 @@ In[]:= ElementReduce[G, r^10 ** s^5]
 Out[]= r ** s
 ```
 
-Check whether two words are equal in the group:
+Check whether two words are equal in the group (returns `$Failed` if undecided within resource limits):
 
 ```mathematica
 In[]:= ElementEqualQ[G, r ** s, s ** r^-1]
 Out[]= True
 ```
+
+### Resource limits & conversions
+
+- Permutation-to-FP conversion supports groups up to order `10^7` (using compiled Cannon deduction up to `20,000` and Schreier-Sims stabiliser chains above that).
+- `PermutationGroup[G]` searches for a verified faithful lower-degree coset action before falling back to the regular representation.
+- Output-bound functions guard against memory blowups (`GroupElements` limit `50,000`, `CayleyGraph` limit `20,000`, `GroupMultiplicationTable` limit `2,500`).
 
 ### Free groups
 

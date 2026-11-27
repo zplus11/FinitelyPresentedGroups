@@ -91,24 +91,48 @@ TietzeSubstitute[word_List, g_Integer, rep_List] :=
 ClearAll[TietzeEliminate];
 TietzeEliminate[{gens_List, rels_List}, {ri_Integer, g_Integer, p_Integer}] :=
 	Module[
-		{r = rels[[ri]], s, w, rep, shift},
+		{r = rels[[ri]], s, w, rep, shift, rest},
 
 		s = Sign @ r[[p]];
 		w = Join[InvertWord @ Take[r, p - 1], InvertWord @ Drop[r, p]];
 		rep = If[s == 1, w, InvertWord[w]];
 		shift = If[Abs[#] > g, # - Sign[#], #] &;
+		rest = Map[
+			Function[rel,
+				If[MemberQ[rel, g | -g],
+					shift /@ CyclicReduce[TietzeSubstitute[rel, g, rep]],
+					shift /@ rel]],
+			Delete[rels, ri]];
 		{Delete[gens, g],
-		TietzeNormalise @ Map[shift, TietzeSubstitute[#, g, rep] & /@ Delete[rels, ri], {2}]}]
+		SortBy[DeleteDuplicatesBy[DeleteCases[rest, {}], RelatorKey], {Length, Identity}]}]
+
+
+(* ::Text:: *)
+(*An elimination which would increase the total length by more than $TietzeMaxGrowth is skipped:*)
+
+
+$TietzeMaxGrowth = 100;
 
 
 ClearAll[TietzeEliminateAll];
 TietzeEliminateAll[state : {_List, _List}] :=
 	Module[
-		{s = state, cands},
+		{s = state, rels, cands, occ, shortCand, costs, bestIdx},
 
-		While[(cands = TietzeCandidates[s[[2]]]) =!= {},
-			s = TietzeEliminate[s,
-				First @ SortBy[cands, {TietzeCost[s[[2]], #] &, Identity}]]];
+		While[True,
+			rels = s[[2]];
+			cands = TietzeCandidates[rels];
+			If[cands === {}, Break[]];
+			(* Length <= 2 relators always have non-positive growth; eliminate immediately *)
+			shortCand = SelectFirst[cands, Length[rels[[#[[1]]]]] <= 2 &, None];
+			If[shortCand =!= None,
+				s = TietzeEliminate[s, shortCand];
+				Continue[]];
+			occ = Counts[Abs[Flatten[rels]]];
+			costs = ((Length[rels[[#[[1]]]]] - 2) (Lookup[occ, #[[2]], 1] - 1) - Length[rels[[#[[1]]]]]) & /@ cands;
+			bestIdx = First @ Ordering[costs, 1];
+			If[costs[[bestIdx]] > $TietzeMaxGrowth, Break[]];
+			s = TietzeEliminate[s, cands[[bestIdx]]]];
 		s]
 
 
@@ -124,19 +148,23 @@ TietzeEliminateAll[state : {_List, _List}] :=
 ClearAll[TietzeShorten];
 TietzeShorten[rels_List] :=
 	Module[
-		{best = {0}, cand, gain},
+		{n = Length[rels], conj, invConj, genSets, best = {0}, cand, gain},
 
+		If[n <= 1, Return[rels]];
+		conj = CyclicConjugates /@ rels;
+		invConj = CyclicConjugates @* InvertWord /@ rels;
+		genSets = DeleteDuplicates @* Abs /@ rels;
 		Do[
-			If[i != j,
+			If[i != j && IntersectingQ[genSets[[i]], genSets[[j]]],
 				Do[
 					Do[
 						If[a[[-1]] + b[[1]] == 0 || b[[-1]] + a[[1]] == 0,
 							cand = CyclicReduce[Join[a, b]];
 							gain = Length[rels[[i]]] - Length[cand];
 							If[gain > best[[1]], best = {gain, i, cand}]],
-						{a, CyclicConjugates @ rels[[i]]}, {b, CyclicConjugates @ s}],
-					{s, {rels[[j]], InvertWord @ rels[[j]]}}]],
-			{i, Length @ rels}, {j, Length @ rels}];
+						{a, conj[[i]]}, {b, s}],
+					{s, {conj[[j]], invConj[[j]]}}]],
+			{i, n}, {j, n}];
 		If[best === {0}, rels, ReplacePart[rels, best[[2]] -> best[[3]]]]]
 
 
